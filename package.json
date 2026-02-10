@@ -1,7 +1,7 @@
 {
     "name": "ai-comment-moderator",
     "version": "1.0.0",
-    "description": "AI-powered comment moderation for WordPress",
+    "description": "CommentGuard — AI-powered comment moderation for WordPress",
     "scripts": {
         "build": "wp-scripts build",
         "start": "wp-scripts start",

@@ -6,7 +6,7 @@
  */
 export default {
     // App
-    'app.title': 'AI Comment Moderator',
+    'app.title': 'CommentGuard',
     'app.tabs.settings': 'Settings',
     'app.tabs.queue': 'Queue',
     'app.tabs.logs': 'Audit Log',

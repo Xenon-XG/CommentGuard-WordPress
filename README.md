@@ -1,4 +1,4 @@
-# 🤖 AI Comment Moderator
+# 🤖 CommentGuard
 
 [English](./docs/README_EN.md)
 
@@ -93,7 +93,7 @@ ai-comment-moderator/
 
 ```javascript
 export default {
-    'app.title': 'AI Comment Moderator',
+    'app.title': 'CommentGuard',
     'app.tabs.settings': '設定',
     // ... 翻译所有 key
 };

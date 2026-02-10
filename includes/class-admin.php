@@ -147,7 +147,7 @@ class Admin
                 ?>
                 <div class="notice notice-warning is-dismissible">
                     <p>
-                        <strong><?php esc_html_e('AI Comment Moderator:', 'ai-comment-moderator'); ?></strong>
+                        <strong><?php esc_html_e('CommentGuard:', 'ai-comment-moderator'); ?></strong>
                         <?php
                         printf(
                             /* translators: %s: URL to discussion settings */
@@ -167,7 +167,7 @@ class Admin
             ?>
             <div class="notice notice-success is-dismissible">
                 <p>
-                    <strong><?php esc_html_e('AI Comment Moderator', 'ai-comment-moderator'); ?></strong> —
+                    <strong><?php esc_html_e('CommentGuard', 'ai-comment-moderator'); ?></strong> —
                     <?php
                     printf(
                         /* translators: %s: URL to settings page */

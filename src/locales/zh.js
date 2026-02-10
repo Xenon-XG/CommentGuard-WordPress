@@ -3,7 +3,7 @@
  */
 export default {
     // App
-    'app.title': 'AI Comment Moderator',
+    'app.title': 'CommentGuard',
     'app.tabs.settings': '基础设置',
     'app.tabs.queue': '审核队列',
     'app.tabs.logs': '审核日志',

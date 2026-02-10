@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name:       AI Comment Moderator
- * Description:       基于 AI Agent 模式的智能评论审核插件。支持 OpenAI，可扩展至其他 AI 提供商。自动批准、拒绝或标记评论。
+ * Plugin Name:       CommentGuard
+ * Description:       基于 AI Agent 模式的智能评论审核 WordPress 插件。支持 OpenAI，可扩展至其他 AI 提供商。自动批准、拒绝或标记评论。
  * Version:           1.0.0
  * Requires at least: 6.0
  * Requires PHP:      7.4

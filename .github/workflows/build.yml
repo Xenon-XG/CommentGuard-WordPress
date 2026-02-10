@@ -29,18 +29,18 @@ jobs:
       - name: Create plugin zip
         run: |
           mkdir -p dist
-          rsync -av --exclude-from='.distignore' ./ dist/ai-comment-moderator/
+          rsync -av --exclude-from='.distignore' ./ dist/commentguard/
           cd dist
-          zip -r ai-comment-moderator.zip ai-comment-moderator/
+          zip -r commentguard.zip commentguard/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ai-comment-moderator
-          path: dist/ai-comment-moderator.zip
+          name: commentguard
+          path: dist/commentguard.zip
 
       - name: Upload to Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/ai-comment-moderator.zip
+          files: dist/commentguard.zip
