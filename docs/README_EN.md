@@ -41,7 +41,7 @@ AI analyzes: content + article context + author info
 
 1. Download or clone this repository
 2. Run `npm install && npm run build` to compile frontend assets
-3. Upload the `ai-comment-moderator` folder to `/wp-content/plugins/`
+3. Upload the `commentguard` folder to `/wp-content/plugins/`
 4. Activate the plugin in WordPress **Plugins** page
 5. Go to **Comments → AI Moderation** to configure
 
@@ -54,8 +54,8 @@ AI analyzes: content + article context + author info
 ## 🏗️ Architecture
 
 ```
-ai-comment-moderator/
-├── ai-comment-moderator.php        # Plugin entry point
+commentguard/
+├── commentguard.php                # Plugin entry point
 ├── uninstall.php                   # Clean removal (drops tables, options, cron)
 ├── includes/
 │   ├── class-admin.php                 # WP admin integration

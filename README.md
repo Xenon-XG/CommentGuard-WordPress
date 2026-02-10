@@ -41,7 +41,7 @@ AI 分析：评论内容 + 文章上下文 + 作者信息
 
 1. 下载或克隆本仓库
 2. 运行 `npm install && npm run build` 编译前端资源
-3. 将 `ai-comment-moderator` 文件夹上传到 `/wp-content/plugins/`
+3. 将 `commentguard` 文件夹上传到 `/wp-content/plugins/`
 4. 在 WordPress **插件** 页面激活插件
 5. 前往 **评论 → AI 审核** 进行配置
 
@@ -54,8 +54,8 @@ AI 分析：评论内容 + 文章上下文 + 作者信息
 ## 🏗️ 项目结构
 
 ```
-ai-comment-moderator/
-├── ai-comment-moderator.php        # 插件入口
+commentguard/
+├── commentguard.php                # 插件入口
 ├── uninstall.php                   # 卸载清理（删除数据表、配置、定时任务）
 ├── includes/
 │   ├── class-admin.php                 # WP 后台集成
