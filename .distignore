@@ -1,0 +1,18 @@
+# Dev & build tooling
+node_modules/
+src/
+package.json
+package-lock.json
+webpack.config.js
+.github/
+.gitignore
+.distignore
+
+# Documentation (not needed in plugin zip)
+docs/
+
+# IDE & OS files
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db

@@ -1,0 +1,439 @@
+/* ==========================================================================
+   AI Comment Moderator — Admin SPA Styles
+   ========================================================================== */
+
+/* App Layout */
+.acm-app {
+    max-width: 960px;
+    margin: 20px auto 40px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.acm-header {
+    margin-bottom: 24px;
+}
+
+.acm-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #1d2327;
+    margin: 0;
+}
+
+.acm-logo {
+    font-size: 28px;
+}
+
+.acm-version {
+    font-size: 12px;
+    color: #999;
+    font-weight: 400;
+    background: #f0f0f0;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+/* Notices */
+.acm-moderation-notice,
+.acm-global-notice {
+    margin: 0 0 16px !important;
+}
+
+/* Tab Panel */
+.acm-tab-panel .components-tab-panel__tabs {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px 8px 0 0;
+    border-bottom: none;
+    padding: 0 8px;
+    margin-bottom: 0;
+}
+
+.acm-tab-panel .components-tab-panel__tabs button {
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #646970;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+}
+
+.acm-tab-panel .components-tab-panel__tabs button:hover {
+    color: #2271b1;
+}
+
+.acm-tab-panel .components-tab-panel__tabs button.is-active {
+    color: #2271b1;
+    border-bottom-color: #2271b1;
+}
+
+.acm-tab-panel .components-tab-panel__tab-content {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 24px;
+}
+
+/* Cards */
+.acm-card {
+    margin-bottom: 20px !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+}
+
+.acm-card .components-card__header {
+    border-bottom: 1px solid #f0f0f0;
+    padding: 16px 20px;
+}
+
+.acm-card .components-card__header h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.acm-card .components-card__body {
+    padding: 20px;
+}
+
+/* Form controls spacing */
+.acm-card .components-toggle-control {
+    margin-bottom: 16px;
+}
+
+.acm-card .components-base-control {
+    margin-bottom: 16px;
+}
+
+/* Button groups */
+.acm-button-group {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+/* Save bar */
+.acm-save-bar {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.acm-save-btn {
+    min-width: 120px;
+    justify-content: center;
+}
+
+/* Queue toolbar */
+.acm-queue-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.acm-queue-toolbar .components-select-control {
+    min-width: 140px;
+}
+
+.acm-queue-count {
+    color: #646970;
+    font-size: 13px;
+}
+
+.acm-process-btn {
+    margin-left: auto !important;
+}
+
+/* Table */
+.acm-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.acm-table th {
+    text-align: left;
+    padding: 10px 12px;
+    font-weight: 600;
+    color: #1d2327;
+    white-space: nowrap;
+}
+
+.acm-table td {
+    padding: 10px 12px;
+    vertical-align: top;
+}
+
+.acm-comment-cell {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #50575e;
+}
+
+.acm-reason-cell {
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #646970;
+    font-size: 12px;
+    cursor: help;
+}
+
+.acm-time-cell {
+    white-space: nowrap;
+    color: #646970;
+    font-size: 12px;
+}
+
+.acm-actions-cell {
+    white-space: nowrap;
+}
+
+.acm-actions-cell .components-button {
+    margin-right: 4px;
+    font-size: 12px;
+}
+
+/* Status & Result badges */
+.acm-status-pending {
+    color: #996800;
+}
+
+.acm-status-processing {
+    color: #0073aa;
+}
+
+.acm-status-completed {
+    color: #46b450;
+}
+
+.acm-status-error {
+    color: #dc3232;
+}
+
+.acm-result-approved {
+    color: #46b450;
+    font-weight: 500;
+}
+
+.acm-result-rejected {
+    color: #dc3232;
+    font-weight: 500;
+}
+
+.acm-result-flagged {
+    color: #996800;
+    font-weight: 500;
+}
+
+/* Loading & Empty states */
+.acm-loading {
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+}
+
+.acm-empty {
+    text-align: center;
+    padding: 40px;
+    color: #646970;
+    font-size: 14px;
+}
+
+/* Pagination */
+.acm-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #f0f0f0;
+    color: #646970;
+    font-size: 13px;
+}
+
+/* Stats Grid */
+.acm-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.acm-stat-card {
+    text-align: center;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.acm-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+.acm-stat-number {
+    font-size: 36px;
+    font-weight: 700;
+    color: #1d2327;
+    line-height: 1.2;
+}
+
+.acm-stat-label {
+    font-size: 13px;
+    color: #646970;
+    margin-top: 4px;
+}
+
+.acm-stat-rate {
+    font-size: 12px;
+    color: #999;
+    margin-top: 2px;
+}
+
+/* Stat card color accents */
+.acm-stat-pending .acm-stat-number {
+    color: #996800;
+}
+
+.acm-stat-approved .acm-stat-number {
+    color: #46b450;
+}
+
+.acm-stat-rejected .acm-stat-number {
+    color: #dc3232;
+}
+
+.acm-stat-flagged .acm-stat-number {
+    color: #dba617;
+}
+
+.acm-stat-error .acm-stat-number {
+    color: #dc3232;
+}
+
+.acm-stats-refresh {
+    text-align: center;
+}
+
+/* Language Toggle */
+.acm-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.acm-lang-select {
+    padding: 4px 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #1d2327;
+    background: #fff;
+    cursor: pointer;
+    outline: none;
+}
+
+.acm-lang-select:hover {
+    border-color: #2271b1;
+}
+
+.acm-lang-select:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+}
+
+/* Clear Logs Button */
+.acm-clear-logs-btn {
+    margin-left: auto !important;
+}
+
+/* Log Detail Row */
+.acm-row-expanded>td {
+    border-bottom: none !important;
+}
+
+.acm-detail-row>td {
+    padding: 0 12px 16px !important;
+    background: #f9f9f9;
+}
+
+.acm-detail-content {
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+}
+
+.acm-detail-section {
+    margin-bottom: 12px;
+}
+
+.acm-detail-section strong {
+    display: block;
+    color: #1d2327;
+    margin-bottom: 4px;
+    font-size: 13px;
+}
+
+.acm-detail-section p {
+    margin: 0;
+    color: #50575e;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.acm-detail-row-meta {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: #646970;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.acm-detail-row-meta strong {
+    color: #1d2327;
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+    .acm-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .acm-queue-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .acm-process-btn {
+        margin-left: 0 !important;
+    }
+
+    .acm-clear-logs-btn {
+        margin-left: 0 !important;
+    }
+
+    .acm-detail-row-meta {
+        flex-direction: column;
+        gap: 8px;
+    }
+}

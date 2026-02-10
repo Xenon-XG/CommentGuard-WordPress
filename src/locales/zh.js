@@ -1,0 +1,116 @@
+/**
+ * Chinese (中文) translations
+ */
+export default {
+    // App
+    'app.title': 'AI Comment Moderator',
+    'app.tabs.settings': '基础设置',
+    'app.tabs.queue': '审核队列',
+    'app.tabs.logs': '审核日志',
+    'app.tabs.stats': '统计看板',
+    'app.moderation_warning': '⚠️ WordPress 评论审核队列未启用。',
+    'app.moderation_link': '前往讨论设置启用「评论必须经人工批准」',
+
+    // Settings — Enable
+    'settings.enable_title': '启用 AI 审核',
+    'settings.enable_label': '启用 AI 评论审核',
+    'settings.enable_help_on': 'AI 审核已开启，新评论将自动进入审核队列',
+    'settings.enable_help_off': '开启后，新提交的评论将由 AI 自动审核',
+
+    // Settings — AI config
+    'settings.ai_config_title': 'AI 接口配置',
+    'settings.provider': 'AI 提供商',
+    'settings.model': 'AI 模型',
+    'settings.model_help': '输入模型名称，例如：gpt-4o-mini、gpt-4o、deepseek-chat',
+    'settings.base_url': 'API Base URL（可选）',
+    'settings.base_url_help': '如果使用代理或自定义端点，请填写。留空使用默认地址。',
+    'settings.test_connection': '测试连接',
+    'settings.api_key_placeholder': '输入您的 API Key',
+    'settings.api_key_help_set': '已保存。留空保持当前 Key 不变，输入新值将覆盖。',
+    'settings.api_key_help_unset': '请输入 AI 提供商的 API Key',
+    'settings.saved': '设置已保存',
+    'settings.save_failed': '保存失败',
+    'settings.test_failed': '连接测试失败',
+
+    // Settings — Moderation
+    'settings.moderation_title': '审核配置',
+    'settings.skip_admins': '跳过管理员评论',
+    'settings.skip_admins_help': '管理员发布的评论不经过 AI 审核',
+    'settings.moderate_approved': '审核已通过的评论',
+    'settings.moderate_approved_help': '对 WordPress 已自动通过的评论也进行 AI 审核（如白名单用户的评论）',
+    'settings.enable_audit_log': '启用审核日志',
+    'settings.enable_audit_log_help': '记录每次 AI 审核的详细信息，包括理由和 Token 用量',
+    'settings.cleanup_days': '日志保留天数',
+    'settings.cleanup_days_help': '超过此天数的队列记录和审核日志将被自动清理',
+    'settings.cron_interval': '队列触发间隔（分钟）',
+    'settings.cron_interval_help': '设置 WP-Cron 自动处理队列的时间间隔，修改后需保存并刷新页面生效',
+
+    // Settings — System prompt
+    'settings.prompt_title': '自定义 System Prompt',
+    'settings.prompt_help': '直接编辑 AI 审核的系统提示词。',
+    'settings.prompt_restore': '恢复默认提示词',
+    'settings.save': '保存设置',
+
+    // Queue
+    'queue.all_status': '全部状态',
+    'queue.pending': '等待中',
+    'queue.processing': '处理中',
+    'queue.completed': '已完成',
+    'queue.error': '错误',
+    'queue.records': '条记录',
+    'queue.process': '手动执行队列',
+    'queue.refresh': '刷新',
+    'queue.empty': '暂无队列记录',
+    'queue.col_comment': '评论',
+    'queue.col_author': '作者',
+    'queue.col_post': '文章',
+    'queue.col_status': '状态',
+    'queue.col_result': '结果',
+    'queue.col_reason': '原因',
+    'queue.col_time': '时间',
+    'queue.col_actions': '操作',
+    'queue.comment_deleted': '评论已删除',
+    'queue.retry_success': '已加入重试队列',
+    'queue.operation_failed': '操作失败',
+    'queue.delete_failed': '删除失败',
+    'queue.retry': '重试',
+    'queue.delete': '删除',
+    'queue.prev_page': '上一页',
+    'queue.next_page': '下一页',
+    'queue.process_failed': '处理失败',
+
+    // Logs
+    'logs.all_actions': '全部操作',
+    'logs.approved': '通过',
+    'logs.rejected': '拒绝',
+    'logs.flagged': '标记复审',
+    'logs.empty': '暂无审核日志。请确保已在设置中启用「审核日志」。',
+    'logs.col_content': '评论内容',
+    'logs.col_reason': '审核理由',
+    'logs.col_model': '模型',
+    'logs.clear_all': '清除全部日志',
+    'logs.clear_confirm': '确定要清除所有审核日志吗？此操作不可撤销。',
+    'logs.cleared': '日志已清除',
+    'logs.clear_failed': '清除失败',
+    'logs.detail': '详情',
+    'logs.collapse': '收起',
+    'logs.full_content': '完整评论内容',
+    'logs.full_reason': '完整审核理由',
+    'logs.provider': 'AI 提供商',
+    'logs.token_usage': 'Token 用量',
+
+    // Stats
+    'stats.total': '总记录',
+    'stats.pending': '等待处理',
+    'stats.approved': '已通过',
+    'stats.rejected': '已拒绝',
+    'stats.flagged': '需复审',
+    'stats.error': '错误',
+    'stats.load_failed': '无法加载统计数据',
+    'stats.refresh': '刷新统计',
+
+    // Shared
+    'shared.result_approved': '通过',
+    'shared.result_rejected': '拒绝',
+    'shared.result_flagged': '需复审',
+};
