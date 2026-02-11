@@ -8,11 +8,23 @@ webpack.config.js
 .gitignore
 .distignore
 
-# Documentation (not needed in plugin zip)
+# Git
+.git/
+
+# Documentation (WordPress uses readme.txt)
 docs/
+README.md
 
 # IDE & OS files
 .vscode/
 .idea/
 *.DS_Store
 Thumbs.db
+
+# Logs & reports
+*.log
+*.md
+!readme.txt
+
+# WordPress.org assets
+.wordpress-org/
