@@ -30,20 +30,22 @@ export default function SettingsTab({ initialSettings, providers, defaultSystemP
             delete payload.api_key_masked;
             delete payload.api_key_set;
 
-            await apiFetch({
+            const result = await apiFetch({
                 path: '/ai-moderator/v1/settings',
                 method: 'POST',
                 data: payload,
             });
             showNotice(t('settings.saved'), 'success');
-            if (newApiKey) {
-                setSettings(prev => ({
-                    ...prev,
-                    api_key_set: true,
-                    api_key_masked: newApiKey.slice(0, 8) + '...' + newApiKey.slice(-4),
-                }));
-                setNewApiKey('');
+
+            // Update local state and global source with server-returned settings
+            if (result.settings) {
+                setSettings(result.settings);
+                // Sync to global so tab switches get fresh data
+                if (window.aiCommentModerator) {
+                    window.aiCommentModerator.settings = result.settings;
+                }
             }
+            setNewApiKey('');
         } catch (err) {
             showNotice(err.message || t('settings.save_failed'), 'error');
         }

@@ -4,6 +4,7 @@ import SettingsTab from './SettingsTab';
 import QueueTab from './QueueTab';
 import LogsTab from './LogsTab';
 import StatsTab from './StatsTab';
+import AboutTab from './AboutTab';
 import { LangProvider, useLang } from '../i18n';
 
 const { settings: initialSettings, providers, defaultSystemPrompt, wpModerationEnabled, discussionSettingsUrl, version } = window.aiCommentModerator || {};
@@ -22,6 +23,7 @@ function AppInner() {
         { name: 'queue', title: t('app.tabs.queue'), className: 'acm-tab' },
         { name: 'logs', title: t('app.tabs.logs'), className: 'acm-tab' },
         { name: 'stats', title: t('app.tabs.stats'), className: 'acm-tab' },
+        { name: 'about', title: t('app.tabs.about'), className: 'acm-tab' },
     ];
 
     return (
@@ -82,6 +84,8 @@ function AppInner() {
                             return <LogsTab showNotice={showNotice} />;
                         case 'stats':
                             return <StatsTab />;
+                        case 'about':
+                            return <AboutTab />;
                         default:
                             return null;
                     }

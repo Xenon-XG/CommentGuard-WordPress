@@ -171,9 +171,9 @@ PROMPT;
             return [
                 'success' => false,
                 'action' => 'flag',
-                'reason' => __('No AI provider configured', 'ai-comment-moderator'),
+                'reason' => __('No AI provider configured', 'commentguard'),
                 'usage' => null,
-                'error' => __('No AI provider configured', 'ai-comment-moderator'),
+                'error' => __('No AI provider configured', 'commentguard'),
             ];
         }
 
@@ -186,9 +186,9 @@ PROMPT;
             return [
                 'success' => false,
                 'action' => 'flag',
-                'reason' => __('API key not configured', 'ai-comment-moderator'),
+                'reason' => __('API key not configured', 'commentguard'),
                 'usage' => null,
-                'error' => __('API key not configured', 'ai-comment-moderator'),
+                'error' => __('API key not configured', 'commentguard'),
             ];
         }
 
@@ -215,7 +215,7 @@ PROMPT;
             return [
                 'success' => false,
                 'action' => 'flag',
-                'reason' => __('AI request failed', 'ai-comment-moderator'),
+                'reason' => __('AI request failed', 'commentguard'),
                 'usage' => $response['usage'],
                 'error' => $response['error'],
             ];
@@ -227,7 +227,7 @@ PROMPT;
             return [
                 'success' => true,
                 'action' => 'flag',
-                'reason' => $response['content'] ?? __('AI did not return a decision', 'ai-comment-moderator'),
+                'reason' => $response['content'] ?? __('AI did not return a decision', 'commentguard'),
                 'usage' => $response['usage'],
                 'error' => null,
             ];
@@ -241,7 +241,7 @@ PROMPT;
         ];
 
         $action = $action_map[$tool_call['name']] ?? 'flag';
-        $reason = $tool_call['arguments']['reason'] ?? __('No reason provided', 'ai-comment-moderator');
+        $reason = $tool_call['arguments']['reason'] ?? __('No reason provided', 'commentguard');
 
         return [
             'success' => true,

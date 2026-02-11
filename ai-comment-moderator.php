@@ -2,11 +2,11 @@
 /**
  * Plugin Name:       CommentGuard
  * Description:       基于 AI Agent 模式的智能评论审核 WordPress 插件。支持 OpenAI，可扩展至其他 AI 提供商。自动批准、拒绝或标记评论。
- * Version:           1.0.0
+ * Version:           1.1.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Xenon
- * Text Domain:       ai-comment-moderator
+ * Text Domain:       commentguard
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  */
@@ -16,14 +16,14 @@ namespace flavor\flavor;
 defined('ABSPATH') || exit;
 
 // Plugin constants
-define('FLAVOR_FLAVOR_VERSION', '1.0.0');
+define('FLAVOR_FLAVOR_VERSION', '1.1.0');
 define('FLAVOR_FLAVOR_FILE', __FILE__);
 define('FLAVOR_FLAVOR_DIR', plugin_dir_path(__FILE__));
 define('FLAVOR_FLAVOR_URL', plugin_dir_url(__FILE__));
 define('FLAVOR_FLAVOR_BASENAME', plugin_basename(__FILE__));
 define('FLAVOR_FLAVOR_REST_NAMESPACE', 'ai-moderator/v1');
 define('FLAVOR_FLAVOR_DB_VERSION', '1.0.0');
-define('FLAVOR_FLAVOR_SLUG', 'ai-comment-moderator');
+define('FLAVOR_FLAVOR_SLUG', 'commentguard');
 
 // Autoload classes via classmap
 spl_autoload_register(function ($class) {
@@ -87,9 +87,6 @@ register_deactivation_hook(__FILE__, function () {
  * Initialize plugin
  */
 add_action('plugins_loaded', function () {
-    // Load text domain
-    load_plugin_textdomain('ai-comment-moderator', false, dirname(FLAVOR_FLAVOR_BASENAME) . '/languages');
-
     // Initialize core components
     AIProviderManager::get_instance();
     ModerationAgent::get_instance();

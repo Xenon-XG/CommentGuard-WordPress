@@ -1,4 +1,4 @@
-# 🤖 CommentGuard
+# CommentGuard
 
 [中文](../README.md)
 

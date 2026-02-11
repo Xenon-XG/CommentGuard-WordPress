@@ -1,4 +1,4 @@
-# 🤖 CommentGuard
+# CommentGuard
 
 [English](./docs/README_EN.md)
 

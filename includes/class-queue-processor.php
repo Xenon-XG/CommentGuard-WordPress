@@ -70,7 +70,8 @@ class QueueProcessor
 
         $schedules['flavor_every_' . $interval_minutes . '_min'] = [
             'interval' => $interval_minutes * 60,
-            'display' => sprintf(__('Every %d Minute(s)', 'ai-comment-moderator'), $interval_minutes),
+            /* translators: %d: number of minutes */
+            'display' => sprintf(__('Every %d Minute(s)', 'commentguard'), $interval_minutes),
         ];
         return $schedules;
     }
@@ -113,7 +114,7 @@ class QueueProcessor
             $queue->update($item->id, [
                 'status' => 'completed',
                 'result' => 'rejected',
-                'reason' => __('Comment was deleted', 'ai-comment-moderator'),
+                'reason' => __('Comment was deleted', 'commentguard'),
                 'processed_at' => current_time('mysql'),
             ]);
             return;
@@ -124,7 +125,7 @@ class QueueProcessor
             $queue->update($item->id, [
                 'status' => 'completed',
                 'result' => 'approved',
-                'reason' => __('Comment was already manually moderated', 'ai-comment-moderator'),
+                'reason' => __('Comment was already manually moderated', 'commentguard'),
                 'processed_at' => current_time('mysql'),
             ]);
             return;
@@ -158,7 +159,7 @@ class QueueProcessor
             if ($attempts >= self::MAX_ATTEMPTS) {
                 $queue->update($item->id, [
                     'status' => 'error',
-                    'reason' => $result['error'] ?? __('Max attempts reached', 'ai-comment-moderator'),
+                    'reason' => $result['error'] ?? __('Max attempts reached', 'commentguard'),
                     'processed_at' => current_time('mysql'),
                 ]);
             } else {

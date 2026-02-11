@@ -92,7 +92,7 @@ class CommentHooks
         foreach ($columns as $key => $value) {
             $new_columns[$key] = $value;
             if ($key === 'comment') {
-                $new_columns['ai_moderation'] = __('AI 审核', 'ai-comment-moderator');
+                $new_columns['ai_moderation'] = __('AI 审核', 'commentguard');
             }
         }
         return $new_columns;
@@ -113,19 +113,21 @@ class CommentHooks
         if (empty($result)) {
             // Check if in queue
             global $wpdb;
+            $queue_table = esc_sql(ModerationQueue::get_table_name());
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $queue_status = $wpdb->get_var(
                 $wpdb->prepare(
-                    "SELECT status FROM %i WHERE comment_id = %d ORDER BY created_at DESC LIMIT 1",
-                    ModerationQueue::get_table_name(),
+                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                    "SELECT status FROM `{$queue_table}` WHERE comment_id = %d ORDER BY created_at DESC LIMIT 1",
                     $comment_id
                 )
             );
 
             if ($queue_status) {
                 $status_labels = [
-                    'pending' => '<span style="color:#996800">⏳ ' . esc_html__('队列中', 'ai-comment-moderator') . '</span>',
-                    'processing' => '<span style="color:#0073aa">🔄 ' . esc_html__('处理中', 'ai-comment-moderator') . '</span>',
-                    'error' => '<span style="color:#dc3232">❌ ' . esc_html__('错误', 'ai-comment-moderator') . '</span>',
+                    'pending' => '<span style="color:#996800">⏳ ' . esc_html__('队列中', 'commentguard') . '</span>',
+                    'processing' => '<span style="color:#0073aa">🔄 ' . esc_html__('处理中', 'commentguard') . '</span>',
+                    'error' => '<span style="color:#dc3232">❌ ' . esc_html__('错误', 'commentguard') . '</span>',
                 ];
                 echo wp_kses_post($status_labels[$queue_status] ?? '—');
             } else {
@@ -135,9 +137,9 @@ class CommentHooks
         }
 
         $labels = [
-            'approved' => '<span style="color:#46b450" title="' . esc_attr($reason) . '">✅ ' . esc_html__('通过', 'ai-comment-moderator') . '</span>',
-            'rejected' => '<span style="color:#dc3232" title="' . esc_attr($reason) . '">🚫 ' . esc_html__('拒绝', 'ai-comment-moderator') . '</span>',
-            'flagged' => '<span style="color:#996800" title="' . esc_attr($reason) . '">⚠️ ' . esc_html__('需复审', 'ai-comment-moderator') . '</span>',
+            'approved' => '<span style="color:#46b450" title="' . esc_attr($reason) . '">✅ ' . esc_html__('通过', 'commentguard') . '</span>',
+            'rejected' => '<span style="color:#dc3232" title="' . esc_attr($reason) . '">🚫 ' . esc_html__('拒绝', 'commentguard') . '</span>',
+            'flagged' => '<span style="color:#996800" title="' . esc_attr($reason) . '">⚠️ ' . esc_html__('需复审', 'commentguard') . '</span>',
         ];
 
         echo wp_kses_post($labels[$result] ?? '—');
@@ -161,7 +163,7 @@ class CommentHooks
         $actions['ai_remoderate'] = sprintf(
             '<a href="%s">%s</a>',
             esc_url($url),
-            esc_html__('AI 重新审核', 'ai-comment-moderator')
+            esc_html__('AI 重新审核', 'commentguard')
         );
 
         return $actions;
@@ -184,7 +186,7 @@ class CommentHooks
         check_admin_referer('ai_remoderate_' . $comment_id);
 
         if (!current_user_can('moderate_comments')) {
-            wp_die(__('You do not have permission to do this.', 'ai-comment-moderator'));
+            wp_die(esc_html__('You do not have permission to do this.', 'commentguard'));
         }
 
         // Set comment back to pending
@@ -197,7 +199,7 @@ class CommentHooks
         // Re-queue
         ModerationQueue::get_instance()->enqueue($comment_id);
 
-        wp_redirect(admin_url('edit-comments.php?ai_remoderated=1'));
+        wp_safe_redirect(admin_url('edit-comments.php?ai_remoderated=1'));
         exit;
     }
 }

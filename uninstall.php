@@ -12,7 +12,9 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 global $wpdb;
 
 // 1. Drop database tables
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}ai_comment_queue");
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}ai_comment_audit_log");
 
 // 2. Delete options

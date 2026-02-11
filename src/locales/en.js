@@ -112,6 +112,25 @@ export default {
     'stats.load_failed': 'Failed to load statistics',
     'stats.refresh': 'Refresh Stats',
 
+    // About
+    'app.tabs.about': 'About',
+    'about.license_title': 'Open Source License',
+    'about.license_1': 'This plugin is open-sourced under the GPLv2 license. If you do not accept this license, please remove it immediately.',
+    'about.license_2': 'Please comply with the open source license and retain the plugin copyright information.',
+    'about.usage_title': 'Usage Notes',
+    'about.usage_1': 'This plugin is intended for website administrators to manage comments lawfully. Usage for illegal purposes is prohibited.',
+    'about.usage_2': 'You must configure your own AI API key. Any API usage fees are your responsibility.',
+    'about.usage_3': 'AI moderation results are for reference only. Review audit logs regularly to ensure accuracy.',
+    'about.usage_4': 'This plugin does not collect any user data. All data is stored only in your WordPress database.',
+    'about.info_title': 'Plugin Information',
+    'about.info_name': 'Plugin Name',
+    'about.info_version': 'Current Version',
+    'about.info_author': 'Author',
+    'about.info_license': 'License',
+    'about.info_php': 'PHP Required',
+    'about.info_wp': 'WordPress Required',
+    'about.links_title': 'Project Links',
+
     // Shared
     'shared.result_approved': 'Approved',
     'shared.result_rejected': 'Rejected',

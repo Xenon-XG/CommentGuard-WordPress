@@ -183,9 +183,22 @@ class RestAPI
             delete_transient('flavor_flavor_needs_moderation');
         }
 
+        // Build frontend-safe settings (mask API key)
+        $frontend = $current;
+        if (!empty($frontend['api_key'])) {
+            $key = $frontend['api_key'];
+            $frontend['api_key_masked'] = substr($key, 0, 8) . '...' . substr($key, -4);
+            $frontend['api_key_set'] = true;
+        } else {
+            $frontend['api_key_masked'] = '';
+            $frontend['api_key_set'] = false;
+        }
+        unset($frontend['api_key']);
+
         return new \WP_REST_Response([
             'success' => true,
-            'message' => __('设置已保存', 'ai-comment-moderator'),
+            'message' => __('设置已保存', 'commentguard'),
+            'settings' => $frontend,
         ], 200);
     }
 
@@ -247,7 +260,7 @@ class RestAPI
 
         return new \WP_REST_Response([
             'success' => $success,
-            'message' => $success ? __('已加入重试队列', 'ai-comment-moderator') : __('操作失败', 'ai-comment-moderator'),
+            'message' => $success ? __('已加入重试队列', 'commentguard') : __('操作失败', 'commentguard'),
         ], $success ? 200 : 400);
     }
 
@@ -308,7 +321,7 @@ class RestAPI
         if (empty($api_key)) {
             return new \WP_REST_Response([
                 'success' => false,
-                'message' => __('请提供 API Key', 'ai-comment-moderator'),
+                'message' => __('请提供 API Key', 'commentguard'),
             ], 400);
         }
 
@@ -318,7 +331,7 @@ class RestAPI
         if (!$provider) {
             return new \WP_REST_Response([
                 'success' => false,
-                'message' => __('未知的 AI 提供商', 'ai-comment-moderator'),
+                'message' => __('未知的 AI 提供商', 'commentguard'),
             ], 400);
         }
 
@@ -332,8 +345,9 @@ class RestAPI
         return new \WP_REST_Response([
             'success' => $result['valid'],
             'message' => $result['valid']
-                ? __('API 连接测试成功！', 'ai-comment-moderator')
-                : sprintf(__('连接失败: %s', 'ai-comment-moderator'), $result['error']),
+                ? __('API 连接测试成功！', 'commentguard')
+                /* translators: %s: error message from API */
+                : sprintf(__('连接失败: %s', 'commentguard'), $result['error']),
         ], $result['valid'] ? 200 : 400);
     }
 
@@ -350,7 +364,7 @@ class RestAPI
 
         return new \WP_REST_Response([
             'success' => true,
-            'message' => __('队列处理已触发', 'ai-comment-moderator'),
+            'message' => __('队列处理已触发', 'commentguard'),
             'stats' => $stats,
         ], 200);
     }
@@ -366,7 +380,7 @@ class RestAPI
         return new \WP_REST_Response([
             'success' => true,
             'deleted' => $deleted,
-            'message' => __('日志已清除', 'ai-comment-moderator'),
+            'message' => __('日志已清除', 'commentguard'),
         ], 200);
     }
 }

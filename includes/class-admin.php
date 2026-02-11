@@ -35,10 +35,10 @@ class Admin
     public function add_menu(): void
     {
         add_comments_page(
-            __('AI 评论审核', 'ai-comment-moderator'),
-            __('AI 审核', 'ai-comment-moderator'),
+            __('AI 评论审核', 'commentguard'),
+            __('AI 审核', 'commentguard'),
             'manage_options',
-            'ai-comment-moderator',
+            'commentguard',
             [$this, 'render_page']
         );
     }
@@ -48,7 +48,7 @@ class Admin
      */
     public function render_page(): void
     {
-        echo '<div id="ai-comment-moderator-root"></div>';
+        echo '<div id="commentguard-root"></div>';
     }
 
     /**
@@ -57,7 +57,7 @@ class Admin
     public function enqueue_scripts(string $hook): void
     {
         // Only load on our page
-        if ($hook !== 'comments_page_ai-comment-moderator') {
+        if ($hook !== 'comments_page_commentguard') {
             return;
         }
 
@@ -147,12 +147,12 @@ class Admin
                 ?>
                 <div class="notice notice-warning is-dismissible">
                     <p>
-                        <strong><?php esc_html_e('CommentGuard:', 'ai-comment-moderator'); ?></strong>
+                        <strong><?php esc_html_e('CommentGuard:', 'commentguard'); ?></strong>
                         <?php
                         printf(
                             /* translators: %s: URL to discussion settings */
-                            esc_html__('为了让 AI 审核正常工作，请前往 %s 并启用「评论必须经人工批准」选项。', 'ai-comment-moderator'),
-                            '<a href="' . esc_url(admin_url('options-discussion.php')) . '">' . esc_html__('讨论设置', 'ai-comment-moderator') . '</a>'
+                            esc_html__('为了让 AI 审核正常工作，请前往 %s 并启用「评论必须经人工批准」选项。', 'commentguard'),
+                            '<a href="' . esc_url(admin_url('options-discussion.php')) . '">' . esc_html__('讨论设置', 'commentguard') . '</a>'
                         );
                         ?>
                     </p>
@@ -167,12 +167,12 @@ class Admin
             ?>
             <div class="notice notice-success is-dismissible">
                 <p>
-                    <strong><?php esc_html_e('CommentGuard', 'ai-comment-moderator'); ?></strong> —
+                    <strong><?php esc_html_e('CommentGuard', 'commentguard'); ?></strong> —
                     <?php
                     printf(
                         /* translators: %s: URL to settings page */
-                        esc_html__('插件已激活！请前往 %s 配置 AI 接口。', 'ai-comment-moderator'),
-                        '<a href="' . esc_url(admin_url('edit-comments.php?page=ai-comment-moderator')) . '">' . esc_html__('设置页面', 'ai-comment-moderator') . '</a>'
+                        esc_html__('插件已激活！请前往 %s 配置 AI 接口。', 'commentguard'),
+                        '<a href="' . esc_url(admin_url('edit-comments.php?page=commentguard')) . '">' . esc_html__('设置页面', 'commentguard') . '</a>'
                     );
                     ?>
                 </p>
@@ -185,7 +185,7 @@ class Admin
         if (isset($_GET['ai_remoderated'])) {
             ?>
             <div class="notice notice-success is-dismissible">
-                <p><?php esc_html_e('评论已重新加入 AI 审核队列。', 'ai-comment-moderator'); ?></p>
+                <p><?php esc_html_e('评论已重新加入 AI 审核队列。', 'commentguard'); ?></p>
             </div>
             <?php
         }

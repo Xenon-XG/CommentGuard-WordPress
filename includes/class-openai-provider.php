@@ -78,7 +78,7 @@ class OpenAIProvider implements AIProviderInterface
         $body = json_decode(wp_remote_retrieve_body($response), true);
 
         if ($status_code !== 200) {
-            $error_msg = $body['error']['message'] ?? __('Unknown API error', 'ai-comment-moderator');
+            $error_msg = $body['error']['message'] ?? __('Unknown API error', 'commentguard');
             return [
                 'success' => false,
                 'error' => sprintf('[%d] %s', $status_code, $error_msg),
@@ -92,7 +92,7 @@ class OpenAIProvider implements AIProviderInterface
         if (!$choice) {
             return [
                 'success' => false,
-                'error' => __('No response from AI model', 'ai-comment-moderator'),
+                'error' => __('No response from AI model', 'commentguard'),
                 'tool_calls' => null,
                 'content' => null,
                 'usage' => null,
@@ -147,7 +147,7 @@ class OpenAIProvider implements AIProviderInterface
         }
 
         $body = json_decode(wp_remote_retrieve_body($response), true);
-        $error = $body['error']['message'] ?? __('Invalid API key', 'ai-comment-moderator');
+        $error = $body['error']['message'] ?? __('Invalid API key', 'commentguard');
         return ['valid' => false, 'error' => $error];
     }
 

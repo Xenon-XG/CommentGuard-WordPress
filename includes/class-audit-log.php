@@ -42,7 +42,7 @@ class AuditLog
         $table_name = self::get_table_name();
         $charset_collate = $wpdb->get_charset_collate();
 
-        $sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
+        $sql = "CREATE TABLE IF NOT EXISTS `{$table_name}` (
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
             comment_id BIGINT UNSIGNED NOT NULL,
             action VARCHAR(20) NOT NULL,
@@ -55,7 +55,7 @@ class AuditLog
             KEY idx_comment_id (comment_id),
             KEY idx_action (action),
             KEY idx_created_at (created_at)
-        ) {$charset_collate};";
+        ) {$charset_collate};";;
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta($sql);
@@ -68,6 +68,7 @@ class AuditLog
     {
         global $wpdb;
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
         $inserted = $wpdb->insert(
             self::get_table_name(),
             [
@@ -96,50 +97,62 @@ class AuditLog
             'action' => '',
             'per_page' => 20,
             'page' => 1,
-            'orderby' => 'created_at',
             'order' => 'DESC',
         ];
         $args = wp_parse_args($args, $defaults);
-        $table = self::get_table_name();
+        $table = esc_sql(self::get_table_name());
+        $comments = esc_sql($wpdb->comments);
+        $posts = esc_sql($wpdb->posts);
 
-        $where = '1=1';
-        $values = [];
-        if (!empty($args['action'])) {
-            $where .= ' AND l.action = %s';
-            $values[] = $args['action'];
-        }
-
-        $offset = ($args['page'] - 1) * $args['per_page'];
+        $offset = absint(($args['page'] - 1) * $args['per_page']);
+        $per_page = absint($args['per_page']);
         $order = strtoupper($args['order']) === 'ASC' ? 'ASC' : 'DESC';
 
-        $query = "SELECT l.*, c.comment_content, c.comment_author, p.post_title
-                  FROM {$table} l
-                  LEFT JOIN {$wpdb->comments} c ON l.comment_id = c.comment_ID
-                  LEFT JOIN {$wpdb->posts} p ON c.comment_post_ID = p.ID
-                  WHERE {$where}
-                  ORDER BY l.created_at {$order}
-                  LIMIT %d OFFSET %d";
+        // All table names are from esc_sql(), $order is whitelisted to ASC/DESC only.
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
-        $values[] = $args['per_page'];
-        $values[] = $offset;
-
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-        $items = $wpdb->get_results($wpdb->prepare($query, $values));
-
-        $count_query = "SELECT COUNT(*) FROM {$table} l WHERE {$where}";
-        $count_values = array_slice($values, 0, -2);
-        if (!empty($count_values)) {
-            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-            $total = (int) $wpdb->get_var($wpdb->prepare($count_query, $count_values));
+        if (!empty($args['action'])) {
+            $query = $wpdb->prepare(
+                "SELECT l.*, c.comment_content, c.comment_author, p.post_title
+                 FROM `{$table}` l
+                 LEFT JOIN `{$comments}` c ON l.comment_id = c.comment_ID
+                 LEFT JOIN `{$posts}` p ON c.comment_post_ID = p.ID
+                 WHERE l.action = %s
+                 ORDER BY l.created_at {$order}
+                 LIMIT %d OFFSET %d",
+                $args['action'],
+                $per_page,
+                $offset
+            );
+            $count_query = $wpdb->prepare(
+                "SELECT COUNT(*) FROM `{$table}` l WHERE l.action = %s",
+                $args['action']
+            );
         } else {
-            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-            $total = (int) $wpdb->get_var($count_query);
+            $query = $wpdb->prepare(
+                "SELECT l.*, c.comment_content, c.comment_author, p.post_title
+                 FROM `{$table}` l
+                 LEFT JOIN `{$comments}` c ON l.comment_id = c.comment_ID
+                 LEFT JOIN `{$posts}` p ON c.comment_post_ID = p.ID
+                 ORDER BY l.created_at {$order}
+                 LIMIT %d OFFSET %d",
+                $per_page,
+                $offset
+            );
+            $count_query = "SELECT COUNT(*) FROM `{$table}` l";
         }
+
+        $items = $wpdb->get_results($query);
+        $total = (int) $wpdb->get_var($count_query);
+
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 
         return [
             'items' => $items ?: [],
             'total' => $total,
-            'pages' => ceil($total / $args['per_page']),
+            'pages' => ceil($total / $per_page),
         ];
     }
 
@@ -149,8 +162,8 @@ class AuditLog
     public function clear_all(): int
     {
         global $wpdb;
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        return (int) $wpdb->query("TRUNCATE TABLE " . self::get_table_name());
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+        return (int) $wpdb->query("TRUNCATE TABLE `" . esc_sql(self::get_table_name()) . "`");
     }
 
     /**
@@ -160,12 +173,17 @@ class AuditLog
     {
         global $wpdb;
 
-        return (int) $wpdb->query(
+        $table = esc_sql(self::get_table_name());
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $result = (int) $wpdb->query(
             $wpdb->prepare(
-                "DELETE FROM %i WHERE created_at < %s",
-                self::get_table_name(),
+                "DELETE FROM `{$table}` WHERE created_at < %s",
                 gmdate('Y-m-d H:i:s', time() - ($days * DAY_IN_SECONDS))
             )
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        return $result;
     }
 }

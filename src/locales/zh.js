@@ -109,6 +109,25 @@ export default {
     'stats.load_failed': '无法加载统计数据',
     'stats.refresh': '刷新统计',
 
+    // About
+    'app.tabs.about': '关于',
+    'about.license_title': '开源协议',
+    'about.license_1': '本插件基于 GPLv2 协议开源，如不接受本协议，请立即删除。',
+    'about.license_2': '请遵循开源协议，保留插件版权信息。如不接受本协议，请立即删除。',
+    'about.usage_title': '使用须知',
+    'about.usage_1': '本插件仅供网站管理员合法管理评论使用，禁止用于违法用途。',
+    'about.usage_2': '使用本插件需自行配置 AI API 密钥，因 API 调用产生的费用由用户自行承担。',
+    'about.usage_3': 'AI 审核结果仅供参考，建议定期查看审核日志确保准确性。',
+    'about.usage_4': '本插件不收集任何用户数据，所有数据仅存储在您的 WordPress 数据库中。',
+    'about.info_title': '插件信息',
+    'about.info_name': '插件名称',
+    'about.info_version': '当前版本',
+    'about.info_author': '作者',
+    'about.info_license': '许可证',
+    'about.info_php': 'PHP 要求',
+    'about.info_wp': 'WordPress 要求',
+    'about.links_title': '项目链接',
+
     // Shared
     'shared.result_approved': '通过',
     'shared.result_rejected': '拒绝',

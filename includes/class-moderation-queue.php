@@ -42,7 +42,7 @@ class ModerationQueue
         $table_name = self::get_table_name();
         $charset_collate = $wpdb->get_charset_collate();
 
-        $sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
+        $sql = "CREATE TABLE IF NOT EXISTS `{$table_name}` (
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
             comment_id BIGINT UNSIGNED NOT NULL,
             status VARCHAR(20) NOT NULL DEFAULT 'pending',
@@ -57,7 +57,7 @@ class ModerationQueue
             KEY idx_status (status),
             KEY idx_comment_id (comment_id),
             KEY idx_created_at (created_at)
-        ) {$charset_collate};";
+        ) {$charset_collate};";;
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta($sql);
@@ -71,12 +71,13 @@ class ModerationQueue
     public function enqueue(int $comment_id): ?int
     {
         global $wpdb;
+        $table = esc_sql(self::get_table_name());
 
-        // Check if comment is already in queue
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $existing = $wpdb->get_var(
             $wpdb->prepare(
-                "SELECT id FROM %i WHERE comment_id = %d AND status IN ('pending', 'processing')",
-                self::get_table_name(),
+                // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                "SELECT id FROM `{$table}` WHERE comment_id = %d AND status IN ('pending', 'processing')",
                 $comment_id
             )
         );
@@ -85,6 +86,7 @@ class ModerationQueue
             return (int) $existing;
         }
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
         $inserted = $wpdb->insert(
             self::get_table_name(),
             [
@@ -104,16 +106,20 @@ class ModerationQueue
     public function dequeue(): ?object
     {
         global $wpdb;
+        $table = esc_sql(self::get_table_name());
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $item = $wpdb->get_row(
             $wpdb->prepare(
-                "SELECT * FROM %i WHERE status = 'pending' ORDER BY created_at ASC LIMIT 1",
-                self::get_table_name()
+                // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                "SELECT * FROM `{$table}` WHERE status = %s ORDER BY created_at ASC LIMIT 1",
+                'pending'
             )
         );
 
         if ($item) {
             // Mark as processing
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->update(
                 self::get_table_name(),
                 ['status' => 'processing', 'attempts' => $item->attempts + 1],
@@ -132,6 +138,7 @@ class ModerationQueue
     public function update(int $id, array $data): bool
     {
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $result = $wpdb->update(self::get_table_name(), $data, ['id' => $id]);
         return $result !== false;
     }
@@ -151,50 +158,62 @@ class ModerationQueue
             'order' => 'DESC',
         ];
         $args = wp_parse_args($args, $defaults);
-        $table = self::get_table_name();
+        $table = esc_sql(self::get_table_name());
+        $comments = esc_sql($wpdb->comments);
+        $posts = esc_sql($wpdb->posts);
 
-        $where = '1=1';
-        $values = [];
-        if (!empty($args['status'])) {
-            $where .= ' AND q.status = %s';
-            $values[] = $args['status'];
-        }
-
-        $offset = ($args['page'] - 1) * $args['per_page'];
-        $orderby = in_array($args['orderby'], ['created_at', 'processed_at', 'status']) ? $args['orderby'] : 'created_at';
+        $offset = absint(($args['page'] - 1) * $args['per_page']);
+        $per_page = absint($args['per_page']);
+        $allowed_orderby = ['created_at', 'processed_at', 'status'];
+        $orderby = in_array($args['orderby'], $allowed_orderby, true) ? $args['orderby'] : 'created_at';
         $order = strtoupper($args['order']) === 'ASC' ? 'ASC' : 'DESC';
 
-        // Build query with comment data join
-        $query = "SELECT q.*, c.comment_content, c.comment_author, c.comment_author_email, 
-                         c.comment_date, p.post_title
-                  FROM {$table} q
-                  LEFT JOIN {$wpdb->comments} c ON q.comment_id = c.comment_ID
-                  LEFT JOIN {$wpdb->posts} p ON c.comment_post_ID = p.ID
-                  WHERE {$where}
-                  ORDER BY q.{$orderby} {$order}
-                  LIMIT %d OFFSET %d";
+        $select_fields = "q.*, c.comment_content, c.comment_author, c.comment_author_email,
+                          c.comment_date, p.post_title";
+        $joins = "LEFT JOIN `{$comments}` c ON q.comment_id = c.comment_ID
+                  LEFT JOIN `{$posts}` p ON c.comment_post_ID = p.ID";
 
-        $values[] = $args['per_page'];
-        $values[] = $offset;
+        // All table names from esc_sql(), $orderby whitelisted, $order constrained to ASC/DESC.
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-        $items = $wpdb->get_results($wpdb->prepare($query, $values));
-
-        // Get total count
-        $count_query = "SELECT COUNT(*) FROM {$table} q WHERE {$where}";
-        $count_values = array_slice($values, 0, -2); // Remove LIMIT/OFFSET values
-        if (!empty($count_values)) {
-            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-            $total = (int) $wpdb->get_var($wpdb->prepare($count_query, $count_values));
+        if (!empty($args['status'])) {
+            $query = $wpdb->prepare(
+                "SELECT {$select_fields}
+                 FROM `{$table}` q {$joins}
+                 WHERE q.status = %s
+                 ORDER BY q.`{$orderby}` {$order}
+                 LIMIT %d OFFSET %d",
+                $args['status'],
+                $per_page,
+                $offset
+            );
+            $count_query = $wpdb->prepare(
+                "SELECT COUNT(*) FROM `{$table}` q WHERE q.status = %s",
+                $args['status']
+            );
         } else {
-            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-            $total = (int) $wpdb->get_var($count_query);
+            $query = $wpdb->prepare(
+                "SELECT {$select_fields}
+                 FROM `{$table}` q {$joins}
+                 ORDER BY q.`{$orderby}` {$order}
+                 LIMIT %d OFFSET %d",
+                $per_page,
+                $offset
+            );
+            $count_query = "SELECT COUNT(*) FROM `{$table}` q";
         }
+
+        $items = $wpdb->get_results($query);
+        $total = (int) $wpdb->get_var($count_query);
+
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 
         return [
             'items' => $items ?: [],
             'total' => $total,
-            'pages' => ceil($total / $args['per_page']),
+            'pages' => ceil($total / $per_page),
         ];
     }
 
@@ -204,11 +223,12 @@ class ModerationQueue
     public function get_stats(): array
     {
         global $wpdb;
-        $table = self::get_table_name();
+        $table = esc_sql(self::get_table_name());
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $stats = $wpdb->get_results(
             // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-            "SELECT status, result, COUNT(*) as count FROM {$table} GROUP BY status, result"
+            "SELECT status, result, COUNT(*) as count FROM `{$table}` GROUP BY status, result"
         );
 
         $result = [
@@ -254,6 +274,7 @@ class ModerationQueue
     public function delete(int $id): bool
     {
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         return $wpdb->delete(self::get_table_name(), ['id' => $id], ['%d']) !== false;
     }
 
@@ -264,12 +285,17 @@ class ModerationQueue
     {
         global $wpdb;
 
-        return (int) $wpdb->query(
+        $table = esc_sql(self::get_table_name());
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $result = (int) $wpdb->query(
             $wpdb->prepare(
-                "DELETE FROM %i WHERE status IN ('completed', 'error') AND created_at < %s",
-                self::get_table_name(),
+                "DELETE FROM `{$table}` WHERE status IN ('completed', 'error') AND created_at < %s",
                 gmdate('Y-m-d H:i:s', time() - ($days * DAY_IN_SECONDS))
             )
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        return $result;
     }
 }
