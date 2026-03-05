@@ -81,6 +81,8 @@ export default {
     'queue.prev_page': 'Previous',
     'queue.next_page': 'Next',
     'queue.process_failed': 'Process failed',
+    'queue.per_page': '/ page',
+    'queue.goto_page': 'Go to page',
 
     // Logs
     'logs.all_actions': 'All Actions',
@@ -130,6 +132,13 @@ export default {
     'about.info_php': 'PHP Required',
     'about.info_wp': 'WordPress Required',
     'about.links_title': 'Project Links',
+
+    // Batch
+    'batch.selected': '%d selected',
+    'batch.delete': 'Batch Delete',
+    'batch.retry': 'Batch Retry',
+    'batch.confirm_delete': 'Are you sure you want to delete the selected records? This cannot be undone.',
+    'batch.failed': 'Batch operation failed',
 
     // Shared
     'shared.result_approved': 'Approved',

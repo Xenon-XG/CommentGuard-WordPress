@@ -74,6 +74,13 @@ class RestAPI
             'permission_callback' => [$this, 'check_permission'],
         ]);
 
+        // Batch queue operations
+        register_rest_route($namespace, '/queue/batch', [
+            'methods' => 'POST',
+            'callback' => [$this, 'batch_queue_action'],
+            'permission_callback' => [$this, 'check_permission'],
+        ]);
+
         // Stats
         register_rest_route($namespace, '/stats', [
             'methods' => 'GET',
@@ -92,6 +99,13 @@ class RestAPI
         register_rest_route($namespace, '/logs/clear', [
             'methods' => 'DELETE',
             'callback' => [$this, 'clear_logs'],
+            'permission_callback' => [$this, 'check_permission'],
+        ]);
+
+        // Batch delete logs
+        register_rest_route($namespace, '/logs/batch', [
+            'methods' => 'DELETE',
+            'callback' => [$this, 'batch_delete_logs'],
             'permission_callback' => [$this, 'check_permission'],
         ]);
 
@@ -276,6 +290,71 @@ class RestAPI
         return new \WP_REST_Response([
             'success' => $success,
         ], $success ? 200 : 400);
+    }
+
+    /**
+     * POST /queue/batch — Batch queue operations (delete or retry)
+     */
+    public function batch_queue_action(\WP_REST_Request $request): \WP_REST_Response
+    {
+        $params = $request->get_json_params();
+        $ids = isset($params['ids']) ? array_map('absint', (array) $params['ids']) : [];
+        $action = isset($params['action']) ? sanitize_text_field($params['action']) : '';
+
+        if (empty($ids) || !in_array($action, ['delete', 'retry'], true)) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => __('参数无效', 'commentguard'),
+            ], 400);
+        }
+
+        $queue = ModerationQueue::get_instance();
+        $success_count = 0;
+
+        foreach ($ids as $id) {
+            if ($action === 'delete') {
+                if ($queue->delete($id)) {
+                    $success_count++;
+                }
+            } elseif ($action === 'retry') {
+                if ($queue->retry($id)) {
+                    $success_count++;
+                }
+            }
+        }
+
+        return new \WP_REST_Response([
+            'success' => $success_count > 0,
+            /* translators: %d: number of successfully processed items */
+            'message' => sprintf(__('成功处理 %d 条记录', 'commentguard'), $success_count),
+            'count' => $success_count,
+        ], 200);
+    }
+
+    /**
+     * DELETE /logs/batch — Batch delete audit logs
+     */
+    public function batch_delete_logs(\WP_REST_Request $request): \WP_REST_Response
+    {
+        $params = $request->get_json_params();
+        $ids = isset($params['ids']) ? array_map('absint', (array) $params['ids']) : [];
+
+        if (empty($ids)) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => __('参数无效', 'commentguard'),
+            ], 400);
+        }
+
+        $audit_log = AuditLog::get_instance();
+        $deleted = $audit_log->delete_by_ids($ids);
+
+        return new \WP_REST_Response([
+            'success' => $deleted > 0,
+            /* translators: %d: number of deleted log entries */
+            'message' => sprintf(__('成功删除 %d 条日志', 'commentguard'), $deleted),
+            'count' => $deleted,
+        ], 200);
     }
 
     /**

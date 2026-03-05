@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       CommentGuard
  * Description:       基于 AI Agent 模式的智能评论审核 WordPress 插件。支持 OpenAI，可扩展至其他 AI 提供商。自动批准、拒绝或标记评论。
- * Version:           1.1.0
+ * Version:           1.1.1
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Xenon
@@ -16,7 +16,7 @@ namespace flavor\flavor;
 defined('ABSPATH') || exit;
 
 // Plugin constants
-define('FLAVOR_FLAVOR_VERSION', '1.1.0');
+define('FLAVOR_FLAVOR_VERSION', '1.1.1');
 define('FLAVOR_FLAVOR_FILE', __FILE__);
 define('FLAVOR_FLAVOR_DIR', plugin_dir_path(__FILE__));
 define('FLAVOR_FLAVOR_URL', plugin_dir_url(__FILE__));

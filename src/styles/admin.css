@@ -487,3 +487,66 @@
 .acm-about-links a {
     font-size: 14px;
 }
+
+/* Batch action bar */
+.acm-batch-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 14px;
+    margin-bottom: 8px;
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: 4px;
+}
+
+.acm-batch-count {
+    font-weight: 600;
+    color: #e65100;
+    font-size: 13px;
+}
+
+/* Checkbox column */
+.acm-col-check {
+    width: 32px;
+    text-align: center !important;
+    padding: 6px 4px !important;
+}
+
+.acm-col-check input[type="checkbox"] {
+    margin: 0;
+}
+
+.acm-row-selected {
+    background: #e3f2fd !important;
+}
+
+/* Page jump */
+.acm-page-jump {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 12px;
+}
+
+.acm-page-input {
+    width: 60px;
+    height: 30px;
+    padding: 2px 6px;
+    font-size: 13px;
+    text-align: center;
+    border: 1px solid #8c8f94;
+    border-radius: 3px;
+}
+
+.acm-page-input::-webkit-inner-spin-button,
+.acm-page-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.acm-goto-btn.components-button {
+    min-width: 36px;
+    height: 30px;
+    padding: 0 8px;
+}

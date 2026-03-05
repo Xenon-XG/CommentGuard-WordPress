@@ -157,6 +157,35 @@ class AuditLog
     }
 
     /**
+     * Delete logs by an array of IDs
+     */
+    public function delete_by_ids(array $ids): int
+    {
+        global $wpdb;
+        if (empty($ids)) {
+            return 0;
+        }
+        $ids = array_map('absint', $ids);
+        $ids = array_filter($ids);
+        if (empty($ids)) {
+            return 0;
+        }
+        $placeholders = implode(',', array_fill(0, count($ids), '%d'));
+        $table = esc_sql(self::get_table_name());
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
+        $result = (int) $wpdb->query(
+            $wpdb->prepare(
+                "DELETE FROM `{$table}` WHERE id IN ({$placeholders})",
+                ...$ids
+            )
+        );
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        return $result;
+    }
+
+    /**
      * Clear all logs
      */
     public function clear_all(): int

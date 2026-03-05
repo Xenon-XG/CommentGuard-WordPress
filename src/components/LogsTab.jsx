@@ -9,10 +9,14 @@ export default function LogsTab({ showNotice }) {
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
     const [pages, setPages] = useState(1);
+    const [perPage, setPerPage] = useState(20);
     const [actionFilter, setActionFilter] = useState('');
     const [loading, setLoading] = useState(false);
     const [clearing, setClearing] = useState(false);
     const [expandedId, setExpandedId] = useState(null);
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [batchLoading, setBatchLoading] = useState(false);
+    const [jumpPage, setJumpPage] = useState('');
 
     const ACTION_LABELS = {
         approve: { text: '✅ ' + t('logs.approved'), className: 'acm-result-approved' },
@@ -22,8 +26,9 @@ export default function LogsTab({ showNotice }) {
 
     const fetchLogs = useCallback(async () => {
         setLoading(true);
+        setSelectedIds([]);
         try {
-            const params = new URLSearchParams({ page, per_page: 20 });
+            const params = new URLSearchParams({ page, per_page: perPage });
             if (actionFilter) params.append('action', actionFilter);
             const res = await apiFetch({ path: `/ai-moderator/v1/logs?${params}` });
             setItems(res.items || []);
@@ -33,7 +38,7 @@ export default function LogsTab({ showNotice }) {
             console.error('Failed to fetch logs:', err);
         }
         setLoading(false);
-    }, [page, actionFilter]);
+    }, [page, perPage, actionFilter]);
 
     useEffect(() => { fetchLogs(); }, [fetchLogs]);
 
@@ -51,6 +56,38 @@ export default function LogsTab({ showNotice }) {
         setClearing(false);
     };
 
+    const handleBatchDelete = async () => {
+        if (selectedIds.length === 0) return;
+        if (!window.confirm(t('batch.confirm_delete'))) return;
+        setBatchLoading(true);
+        try {
+            const res = await apiFetch({
+                path: '/ai-moderator/v1/logs/batch',
+                method: 'DELETE',
+                data: { ids: selectedIds },
+            });
+            showNotice(res.message);
+            fetchLogs();
+        } catch (err) {
+            showNotice(err.message || t('batch.failed'), 'error');
+        }
+        setBatchLoading(false);
+    };
+
+    const toggleSelectAll = () => {
+        if (selectedIds.length === items.length) {
+            setSelectedIds([]);
+        } else {
+            setSelectedIds(items.map(i => i.id));
+        }
+    };
+
+    const toggleSelectItem = (id) => {
+        setSelectedIds(prev =>
+            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+        );
+    };
+
     const toggleExpand = (id) => {
         setExpandedId(prev => prev === id ? null : id);
     };
@@ -59,6 +96,14 @@ export default function LogsTab({ showNotice }) {
         if (!raw) return null;
         try { return typeof raw === 'string' ? JSON.parse(raw) : raw; }
         catch { return null; }
+    };
+
+    const handleJumpPage = () => {
+        const p = parseInt(jumpPage, 10);
+        if (p >= 1 && p <= pages) {
+            setPage(p);
+            setJumpPage('');
+        }
     };
 
     return (
@@ -73,6 +118,16 @@ export default function LogsTab({ showNotice }) {
                         { label: t('logs.flagged'), value: 'flag' },
                     ]}
                     onChange={(val) => { setActionFilter(val); setPage(1); }}
+                    __nextHasNoMarginBottom
+                />
+                <SelectControl
+                    value={String(perPage)}
+                    options={[
+                        { label: '20 ' + t('queue.per_page'), value: '20' },
+                        { label: '50 ' + t('queue.per_page'), value: '50' },
+                        { label: '100 ' + t('queue.per_page'), value: '100' },
+                    ]}
+                    onChange={(val) => { setPerPage(Number(val)); setPage(1); }}
                     __nextHasNoMarginBottom
                 />
                 <span className="acm-queue-count">{total} {t('queue.records')}</span>
@@ -91,6 +146,24 @@ export default function LogsTab({ showNotice }) {
                 </Button>
             </div>
 
+            {/* Batch action bar */}
+            {selectedIds.length > 0 && (
+                <div className="acm-batch-bar">
+                    <span className="acm-batch-count">
+                        {t('batch.selected').replace('%d', selectedIds.length)}
+                    </span>
+                    <Button
+                        variant="secondary"
+                        isDestructive
+                        onClick={handleBatchDelete}
+                        disabled={batchLoading}
+                    >
+                        {batchLoading && <Spinner />}
+                        {t('batch.delete')}
+                    </Button>
+                </div>
+            )}
+
             {loading ? (
                 <div className="acm-loading"><Spinner /></div>
             ) : items.length === 0 ? (
@@ -99,6 +172,13 @@ export default function LogsTab({ showNotice }) {
                 <table className="acm-table widefat striped">
                     <thead>
                         <tr>
+                            <th className="acm-col-check">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedIds.length === items.length && items.length > 0}
+                                    onChange={toggleSelectAll}
+                                />
+                            </th>
                             <th>{t('logs.col_content')}</th>
                             <th>{t('queue.col_author')}</th>
                             <th>{t('queue.col_post')}</th>
@@ -115,7 +195,14 @@ export default function LogsTab({ showNotice }) {
                             const usage = parseTokenUsage(item.token_usage);
                             return (
                                 <>
-                                    <tr key={item.id} className={isExpanded ? 'acm-row-expanded' : ''}>
+                                    <tr key={item.id} className={`${isExpanded ? 'acm-row-expanded' : ''} ${selectedIds.includes(item.id) ? 'acm-row-selected' : ''}`}>
+                                        <td className="acm-col-check">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedIds.includes(item.id)}
+                                                onChange={() => toggleSelectItem(item.id)}
+                                            />
+                                        </td>
                                         <td className="acm-comment-cell">
                                             {item.comment_content
                                                 ? item.comment_content.substring(0, 60) + (item.comment_content.length > 60 ? '...' : '')
@@ -142,7 +229,7 @@ export default function LogsTab({ showNotice }) {
                                     </tr>
                                     {isExpanded && (
                                         <tr key={`${item.id}-detail`} className="acm-detail-row">
-                                            <td colSpan={8}>
+                                            <td colSpan={9}>
                                                 <div className="acm-detail-content">
                                                     <div className="acm-detail-section">
                                                         <strong>{t('logs.full_content')}:</strong>
@@ -182,6 +269,21 @@ export default function LogsTab({ showNotice }) {
                     <Button disabled={page >= pages} onClick={() => setPage(p => p + 1)}>
                         {t('queue.next_page')} ›
                     </Button>
+                    <span className="acm-page-jump">
+                        <input
+                            type="number"
+                            min="1"
+                            max={pages}
+                            value={jumpPage}
+                            onChange={(e) => setJumpPage(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleJumpPage()}
+                            placeholder={t('queue.goto_page')}
+                            className="acm-page-input"
+                        />
+                        <Button variant="secondary" onClick={handleJumpPage} className="acm-goto-btn">
+                            GO
+                        </Button>
+                    </span>
                 </div>
             )}
         </div>

@@ -9,9 +9,13 @@ export default function QueueTab({ showNotice }) {
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
     const [pages, setPages] = useState(1);
+    const [perPage, setPerPage] = useState(15);
     const [statusFilter, setStatusFilter] = useState('');
     const [loading, setLoading] = useState(false);
     const [processing, setProcessing] = useState(false);
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [batchLoading, setBatchLoading] = useState(false);
+    const [jumpPage, setJumpPage] = useState('');
 
     const STATUS_LABELS = {
         pending: { text: '⏳ ' + t('queue.pending'), className: 'acm-status-pending' },
@@ -28,8 +32,9 @@ export default function QueueTab({ showNotice }) {
 
     const fetchQueue = useCallback(async () => {
         setLoading(true);
+        setSelectedIds([]);
         try {
-            const params = new URLSearchParams({ page, per_page: 15 });
+            const params = new URLSearchParams({ page, per_page: perPage });
             if (statusFilter) params.append('status', statusFilter);
             const res = await apiFetch({ path: `/ai-moderator/v1/queue?${params}` });
             setItems(res.items || []);
@@ -39,7 +44,7 @@ export default function QueueTab({ showNotice }) {
             console.error('Failed to fetch queue:', err);
         }
         setLoading(false);
-    }, [page, statusFilter]);
+    }, [page, perPage, statusFilter]);
 
     useEffect(() => { fetchQueue(); }, [fetchQueue]);
 
@@ -74,6 +79,47 @@ export default function QueueTab({ showNotice }) {
         setProcessing(false);
     };
 
+    // Batch operations
+    const handleBatchAction = async (action) => {
+        if (selectedIds.length === 0) return;
+        if (action === 'delete' && !window.confirm(t('batch.confirm_delete'))) return;
+        setBatchLoading(true);
+        try {
+            const res = await apiFetch({
+                path: '/ai-moderator/v1/queue/batch',
+                method: 'POST',
+                data: { ids: selectedIds, action },
+            });
+            showNotice(res.message);
+            fetchQueue();
+        } catch (err) {
+            showNotice(err.message || t('batch.failed'), 'error');
+        }
+        setBatchLoading(false);
+    };
+
+    const toggleSelectAll = () => {
+        if (selectedIds.length === items.length) {
+            setSelectedIds([]);
+        } else {
+            setSelectedIds(items.map(i => i.id));
+        }
+    };
+
+    const toggleSelectItem = (id) => {
+        setSelectedIds(prev =>
+            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+        );
+    };
+
+    const handleJumpPage = () => {
+        const p = parseInt(jumpPage, 10);
+        if (p >= 1 && p <= pages) {
+            setPage(p);
+            setJumpPage('');
+        }
+    };
+
     return (
         <div className="acm-queue-tab">
             <div className="acm-queue-toolbar">
@@ -89,6 +135,16 @@ export default function QueueTab({ showNotice }) {
                     onChange={(val) => { setStatusFilter(val); setPage(1); }}
                     __nextHasNoMarginBottom
                 />
+                <SelectControl
+                    value={String(perPage)}
+                    options={[
+                        { label: '15 ' + t('queue.per_page'), value: '15' },
+                        { label: '30 ' + t('queue.per_page'), value: '30' },
+                        { label: '50 ' + t('queue.per_page'), value: '50' },
+                    ]}
+                    onChange={(val) => { setPerPage(Number(val)); setPage(1); }}
+                    __nextHasNoMarginBottom
+                />
                 <span className="acm-queue-count">{total} {t('queue.records')}</span>
                 <Button variant="secondary" onClick={handleManualProcess} disabled={processing} className="acm-process-btn">
                     {processing && <Spinner />}
@@ -99,6 +155,31 @@ export default function QueueTab({ showNotice }) {
                 </Button>
             </div>
 
+            {/* Batch action bar */}
+            {selectedIds.length > 0 && (
+                <div className="acm-batch-bar">
+                    <span className="acm-batch-count">
+                        {t('batch.selected').replace('%d', selectedIds.length)}
+                    </span>
+                    <Button
+                        variant="secondary"
+                        onClick={() => handleBatchAction('retry')}
+                        disabled={batchLoading}
+                    >
+                        {t('batch.retry')}
+                    </Button>
+                    <Button
+                        variant="secondary"
+                        isDestructive
+                        onClick={() => handleBatchAction('delete')}
+                        disabled={batchLoading}
+                    >
+                        {batchLoading && <Spinner />}
+                        {t('batch.delete')}
+                    </Button>
+                </div>
+            )}
+
             {loading ? (
                 <div className="acm-loading"><Spinner /></div>
             ) : items.length === 0 ? (
@@ -107,6 +188,13 @@ export default function QueueTab({ showNotice }) {
                 <table className="acm-table widefat striped">
                     <thead>
                         <tr>
+                            <th className="acm-col-check">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedIds.length === items.length && items.length > 0}
+                                    onChange={toggleSelectAll}
+                                />
+                            </th>
                             <th>{t('queue.col_comment')}</th>
                             <th>{t('queue.col_author')}</th>
                             <th>{t('queue.col_post')}</th>
@@ -119,7 +207,14 @@ export default function QueueTab({ showNotice }) {
                     </thead>
                     <tbody>
                         {items.map((item) => (
-                            <tr key={item.id}>
+                            <tr key={item.id} className={selectedIds.includes(item.id) ? 'acm-row-selected' : ''}>
+                                <td className="acm-col-check">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedIds.includes(item.id)}
+                                        onChange={() => toggleSelectItem(item.id)}
+                                    />
+                                </td>
                                 <td className="acm-comment-cell">
                                     {item.comment_content
                                         ? item.comment_content.substring(0, 60) + (item.comment_content.length > 60 ? '...' : '')
@@ -169,6 +264,21 @@ export default function QueueTab({ showNotice }) {
                     <Button disabled={page >= pages} onClick={() => setPage(p => p + 1)}>
                         {t('queue.next_page')} ›
                     </Button>
+                    <span className="acm-page-jump">
+                        <input
+                            type="number"
+                            min="1"
+                            max={pages}
+                            value={jumpPage}
+                            onChange={(e) => setJumpPage(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleJumpPage()}
+                            placeholder={t('queue.goto_page')}
+                            className="acm-page-input"
+                        />
+                        <Button variant="secondary" onClick={handleJumpPage} className="acm-goto-btn">
+                            GO
+                        </Button>
+                    </span>
                 </div>
             )}
         </div>

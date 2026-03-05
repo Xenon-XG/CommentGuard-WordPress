@@ -120,15 +120,21 @@ class QueueProcessor
             return;
         }
 
-        // Skip if comment was already manually moderated
+        // Skip if comment was already manually moderated (only on first processing)
+        // On retry (attempts > 0), reset comment to hold so AI can re-evaluate
         if ($comment->comment_approved === '1' || $comment->comment_approved === 'trash' || $comment->comment_approved === 'spam') {
-            $queue->update($item->id, [
-                'status' => 'completed',
-                'result' => 'approved',
-                'reason' => __('Comment was already manually moderated', 'commentguard'),
-                'processed_at' => current_time('mysql'),
-            ]);
-            return;
+            if ((int) $item->attempts <= 1) {
+                // First processing — comment was moderated outside the plugin
+                $queue->update($item->id, [
+                    'status' => 'completed',
+                    'result' => 'approved',
+                    'reason' => __('Comment was already manually moderated', 'commentguard'),
+                    'processed_at' => current_time('mysql'),
+                ]);
+                return;
+            }
+            // Retry — reset comment to hold so AI re-evaluates
+            wp_set_comment_status($comment->comment_ID, 'hold');
         }
 
         // Build context for the agent

@@ -78,6 +78,8 @@ export default {
     'queue.prev_page': '上一页',
     'queue.next_page': '下一页',
     'queue.process_failed': '处理失败',
+    'queue.per_page': '条/页',
+    'queue.goto_page': '跳转页码',
 
     // Logs
     'logs.all_actions': '全部操作',
@@ -127,6 +129,13 @@ export default {
     'about.info_php': 'PHP 要求',
     'about.info_wp': 'WordPress 要求',
     'about.links_title': '项目链接',
+
+    // Batch
+    'batch.selected': '已选择 %d 项',
+    'batch.delete': '批量删除',
+    'batch.retry': '批量重试',
+    'batch.confirm_delete': '确定要删除选中的记录吗？此操作不可撤销。',
+    'batch.failed': '批量操作失败',
 
     // Shared
     'shared.result_approved': '通过',
