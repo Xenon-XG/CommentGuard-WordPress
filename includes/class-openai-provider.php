@@ -6,7 +6,7 @@
  * with function calling (tool use) support.
  */
 
-namespace flavor\flavor;
+namespace Xenon\CommentGuard;
 
 defined('ABSPATH') || exit;
 

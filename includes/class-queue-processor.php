@@ -6,7 +6,7 @@
  * Dequeues pending comments, runs AI Agent moderation, and applies results.
  */
 
-namespace flavor\flavor;
+namespace Xenon\CommentGuard;
 
 defined('ABSPATH') || exit;
 
@@ -145,7 +145,7 @@ class QueueProcessor
             'author_email' => $comment->comment_author_email,
             'author_ip' => $comment->comment_author_IP,
             'post_title' => $post ? $post->post_title : '',
-            'post_excerpt' => $post ? wp_trim_words($post->post_content, 100, '...') : '',
+            'post_excerpt' => $post ? wp_trim_words(strip_shortcodes(strip_tags($post->post_content)), 100, '...') : '',
         ];
 
         // If it's a reply, include parent comment

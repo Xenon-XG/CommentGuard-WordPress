@@ -6,7 +6,7 @@
  * Comments enter the queue when submitted and are processed asynchronously.
  */
 
-namespace flavor\flavor;
+namespace Xenon\CommentGuard;
 
 defined('ABSPATH') || exit;
 
@@ -97,7 +97,12 @@ class ModerationQueue
             ['%d', '%s', '%s']
         );
 
-        return $inserted ? (int) $wpdb->insert_id : null;
+        if ($inserted) {
+            update_comment_meta($comment_id, '_ai_moderation_result', 'queued');
+            return (int) $wpdb->insert_id;
+        }
+
+        return null;
     }
 
     /**

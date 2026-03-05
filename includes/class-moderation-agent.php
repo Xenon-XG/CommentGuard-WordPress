@@ -6,7 +6,7 @@
  * Uses function calling (tool use) to execute approve/reject/flag actions.
  */
 
-namespace flavor\flavor;
+namespace Xenon\CommentGuard;
 
 defined('ABSPATH') || exit;
 
@@ -189,7 +189,7 @@ class ModerationAgent
         $system_prompt = $settings['system_prompt'] ?? $this->get_default_system_prompt();
 
         // Append language instruction based on UI language setting
-        $lang_name = $settings['ui_language_name'] ?? '中文';
+        $lang_name = $settings['ui_language_name'] ?? 'English';
         $system_prompt .= "\n\nIMPORTANT: You MUST respond (including the reason) in {$lang_name}.";
         $messages = [
             ['role' => 'system', 'content' => $system_prompt],

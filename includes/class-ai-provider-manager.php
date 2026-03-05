@@ -6,7 +6,7 @@
  * and retrieving the currently active one based on settings.
  */
 
-namespace flavor\flavor;
+namespace Xenon\CommentGuard;
 
 defined('ABSPATH') || exit;
 

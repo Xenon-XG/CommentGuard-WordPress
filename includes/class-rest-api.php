@@ -5,7 +5,7 @@
  * Provides REST API endpoints for the React SPA settings page.
  */
 
-namespace flavor\flavor;
+namespace Xenon\CommentGuard;
 
 defined('ABSPATH') || exit;
 
@@ -130,6 +130,7 @@ class RestAPI
     public function get_settings(): \WP_REST_Response
     {
         $settings = get_option('flavor_flavor_settings', []);
+        
         $defaults = [
             'enabled' => false,
             'ai_provider' => 'openai',
@@ -142,6 +143,8 @@ class RestAPI
             'audit_log_enabled' => false,
             'cleanup_days' => 30,
             'cron_interval' => 1,
+            'ui_language' => 'en',
+            'ui_language_name' => 'English',
         ];
 
         $merged = wp_parse_args($settings, $defaults);

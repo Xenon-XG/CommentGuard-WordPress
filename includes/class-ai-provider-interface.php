@@ -6,7 +6,7 @@
  * This ensures a consistent API across OpenAI, Gemini, DeepSeek, etc.
  */
 
-namespace flavor\flavor;
+namespace Xenon\CommentGuard;
 
 defined('ABSPATH') || exit;
 

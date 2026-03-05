@@ -6,7 +6,7 @@
  * Can be enabled/disabled via settings.
  */
 
-namespace flavor\flavor;
+namespace Xenon\CommentGuard;
 
 defined('ABSPATH') || exit;
 

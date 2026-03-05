@@ -6,7 +6,7 @@
  * and add them to the moderation queue.
  */
 
-namespace flavor\flavor;
+namespace Xenon\CommentGuard;
 
 defined('ABSPATH') || exit;
 
@@ -110,29 +110,13 @@ class CommentHooks
         $result = get_comment_meta($comment_id, '_ai_moderation_result', true);
         $reason = get_comment_meta($comment_id, '_ai_moderation_reason', true);
 
-        if (empty($result)) {
-            // Check if in queue
-            global $wpdb;
-            $queue_table = esc_sql(ModerationQueue::get_table_name());
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-            $queue_status = $wpdb->get_var(
-                $wpdb->prepare(
-                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-                    "SELECT status FROM `{$queue_table}` WHERE comment_id = %d ORDER BY created_at DESC LIMIT 1",
-                    $comment_id
-                )
-            );
+        if ($result === 'queued') {
+            echo wp_kses_post('<span style="color:#996800">⏳ ' . esc_html__('队列中', 'commentguard') . '</span>');
+            return;
+        }
 
-            if ($queue_status) {
-                $status_labels = [
-                    'pending' => '<span style="color:#996800">⏳ ' . esc_html__('队列中', 'commentguard') . '</span>',
-                    'processing' => '<span style="color:#0073aa">🔄 ' . esc_html__('处理中', 'commentguard') . '</span>',
-                    'error' => '<span style="color:#dc3232">❌ ' . esc_html__('错误', 'commentguard') . '</span>',
-                ];
-                echo wp_kses_post($status_labels[$queue_status] ?? '—');
-            } else {
-                echo '—';
-            }
+        if (empty($result)) {
+            echo '—';
             return;
         }
 

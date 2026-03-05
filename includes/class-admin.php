@@ -6,7 +6,7 @@
  * and handles admin notices.
  */
 
-namespace flavor\flavor;
+namespace Xenon\CommentGuard;
 
 defined('ABSPATH') || exit;
 
