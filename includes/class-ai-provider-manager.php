@@ -34,11 +34,11 @@ class AIProviderManager
          * Action to register additional AI providers.
          *
          * Example:
-         *   add_action('flavor_flavor_register_providers', function($manager) {
+         *   add_action('commentguard_register_providers', function($manager) {
          *       $manager->register_provider(new GeminiProvider());
          *   });
          */
-        do_action('flavor_flavor_register_providers', $this);
+        do_action('commentguard_register_providers', $this);
     }
 
     /**
@@ -71,7 +71,7 @@ class AIProviderManager
      */
     public function get_active_provider(): ?AIProviderInterface
     {
-        $settings = get_option('flavor_flavor_settings', []);
+        $settings = get_option('commentguard_settings', []);
         $provider_id = $settings['ai_provider'] ?? 'openai';
         return $this->get_provider($provider_id);
     }

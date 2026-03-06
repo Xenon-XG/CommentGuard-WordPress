@@ -133,7 +133,7 @@ class MyProvider implements \flavor\flavor\AIProviderInterface {
 通过钩子注册：
 
 ```php
-add_action('flavor_flavor_register_providers', function($manager) {
+add_action('commentguard_register_providers', function($manager) {
     $manager->register(new MyProvider());
 });
 ```

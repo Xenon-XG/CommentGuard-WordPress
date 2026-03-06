@@ -16,19 +16,19 @@ namespace Xenon\CommentGuard;
 defined('ABSPATH') || exit;
 
 // Plugin constants
-define('FLAVOR_FLAVOR_VERSION', '1.1.2');
-define('FLAVOR_FLAVOR_FILE', __FILE__);
-define('FLAVOR_FLAVOR_DIR', plugin_dir_path(__FILE__));
-define('FLAVOR_FLAVOR_URL', plugin_dir_url(__FILE__));
-define('FLAVOR_FLAVOR_BASENAME', plugin_basename(__FILE__));
-define('FLAVOR_FLAVOR_REST_NAMESPACE', 'ai-moderator/v1');
-define('FLAVOR_FLAVOR_DB_VERSION', '1.0.0');
-define('FLAVOR_FLAVOR_SLUG', 'commentguard');
+define('COMMENTGUARD_VERSION', '1.1.2');
+define('COMMENTGUARD_FILE', __FILE__);
+define('COMMENTGUARD_DIR', plugin_dir_path(__FILE__));
+define('COMMENTGUARD_URL', plugin_dir_url(__FILE__));
+define('COMMENTGUARD_BASENAME', plugin_basename(__FILE__));
+define('COMMENTGUARD_REST_NAMESPACE', 'ai-moderator/v1');
+define('COMMENTGUARD_DB_VERSION', '1.0.0');
+define('COMMENTGUARD_SLUG', 'commentguard');
 
 // Autoload classes via classmap
 spl_autoload_register(function ($class) {
     $prefix = 'Xenon\\CommentGuard\\';
-    $base_dir = FLAVOR_FLAVOR_DIR . 'includes/';
+    $base_dir = COMMENTGUARD_DIR . 'includes/';
 
     $len = strlen($prefix);
     if (strncmp($prefix, $class, $len) !== 0) {
@@ -63,7 +63,7 @@ spl_autoload_register(function ($class) {
  * Initialize default settings if not exists or add new fields
  */
 function init_default_settings() {
-    $settings = get_option('flavor_flavor_settings');
+    $settings = get_option('commentguard_settings');
     $needs_update = false;
 
     if (!is_array($settings)) {
@@ -107,7 +107,7 @@ function init_default_settings() {
             'cron_interval' => 1,
         ];
         $settings = wp_parse_args($settings, $defaults);
-        update_option('flavor_flavor_settings', $settings);
+        update_option('commentguard_settings', $settings);
     }
 }
 
@@ -120,11 +120,11 @@ register_activation_hook(__FILE__, function () {
     AuditLog::create_table();
 
     // Set a flag to show welcome notice
-    set_transient('flavor_flavor_activated', true, 30);
+    set_transient('commentguard_activated', true, 30);
 
     // Check if WordPress comment moderation is enabled
     if (get_option('comment_moderation') !== '1') {
-        set_transient('flavor_flavor_needs_moderation', true, 0);
+        set_transient('commentguard_needs_moderation', true, 0);
     }
     
     init_default_settings();
@@ -134,7 +134,7 @@ register_activation_hook(__FILE__, function () {
  * Plugin deactivation
  */
 register_deactivation_hook(__FILE__, function () {
-    wp_clear_scheduled_hook('flavor_flavor_process_queue');
+    wp_clear_scheduled_hook('commentguard_process_queue');
 });
 
 /**
@@ -142,11 +142,11 @@ register_deactivation_hook(__FILE__, function () {
  */
 add_action('plugins_loaded', function () {
     // Check for DB updates
-    $installed_ver = get_option('flavor_flavor_db_version');
-    if ($installed_ver !== FLAVOR_FLAVOR_DB_VERSION) {
+    $installed_ver = get_option('commentguard_db_version');
+    if ($installed_ver !== COMMENTGUARD_DB_VERSION) {
         \Xenon\CommentGuard\ModerationQueue::create_table();
         \Xenon\CommentGuard\AuditLog::create_table();
-        update_option('flavor_flavor_db_version', FLAVOR_FLAVOR_DB_VERSION);
+        update_option('commentguard_db_version', COMMENTGUARD_DB_VERSION);
     }
     
     init_default_settings();

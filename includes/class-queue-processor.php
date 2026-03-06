@@ -34,29 +34,29 @@ class QueueProcessor
         add_filter('cron_schedules', [$this, 'add_cron_interval']);
 
         // Register cron event handler
-        add_action('flavor_flavor_process_queue', [$this, 'process']);
+        add_action('commentguard_process_queue', [$this, 'process']);
 
         // Schedule cron if not already scheduled or if interval changed
-        $settings = get_option('flavor_flavor_settings', []);
+        $settings = get_option('commentguard_settings', []);
         $interval_minutes = max(1, (int) ($settings['cron_interval'] ?? 1));
         $schedule_name = 'flavor_every_' . $interval_minutes . '_min';
 
-        $next = wp_next_scheduled('flavor_flavor_process_queue');
+        $next = wp_next_scheduled('commentguard_process_queue');
         if ($next) {
             // Check if schedule changed
-            $current_schedule = wp_get_schedule('flavor_flavor_process_queue');
+            $current_schedule = wp_get_schedule('commentguard_process_queue');
             if ($current_schedule !== $schedule_name) {
-                wp_clear_scheduled_hook('flavor_flavor_process_queue');
-                wp_schedule_event(time(), $schedule_name, 'flavor_flavor_process_queue');
+                wp_clear_scheduled_hook('commentguard_process_queue');
+                wp_schedule_event(time(), $schedule_name, 'commentguard_process_queue');
             }
         } else {
-            wp_schedule_event(time(), $schedule_name, 'flavor_flavor_process_queue');
+            wp_schedule_event(time(), $schedule_name, 'commentguard_process_queue');
         }
 
         // Cleanup old records twice daily
-        add_action('flavor_flavor_cleanup', [$this, 'cleanup']);
-        if (!wp_next_scheduled('flavor_flavor_cleanup')) {
-            wp_schedule_event(time(), 'twicedaily', 'flavor_flavor_cleanup');
+        add_action('commentguard_cleanup', [$this, 'cleanup']);
+        if (!wp_next_scheduled('commentguard_cleanup')) {
+            wp_schedule_event(time(), 'twicedaily', 'commentguard_cleanup');
         }
     }
 
@@ -65,7 +65,7 @@ class QueueProcessor
      */
     public function add_cron_interval(array $schedules): array
     {
-        $settings = get_option('flavor_flavor_settings', []);
+        $settings = get_option('commentguard_settings', []);
         $interval_minutes = max(1, (int) ($settings['cron_interval'] ?? 1));
 
         $schedules['flavor_every_' . $interval_minutes . '_min'] = [
@@ -81,7 +81,7 @@ class QueueProcessor
      */
     public function process(): void
     {
-        $settings = get_option('flavor_flavor_settings', []);
+        $settings = get_option('commentguard_settings', []);
         $enabled = $settings['enabled'] ?? false;
 
         if (!$enabled) {
@@ -181,7 +181,7 @@ class QueueProcessor
         $this->apply_result($comment, $result);
 
         // Determine provider/model info
-        $settings = get_option('flavor_flavor_settings', []);
+        $settings = get_option('commentguard_settings', []);
 
         // Update queue item
         $queue->update($item->id, [
@@ -242,7 +242,7 @@ class QueueProcessor
      */
     public function cleanup(): void
     {
-        $settings = get_option('flavor_flavor_settings', []);
+        $settings = get_option('commentguard_settings', []);
         $days = $settings['cleanup_days'] ?? 30;
 
         ModerationQueue::get_instance()->cleanup($days);

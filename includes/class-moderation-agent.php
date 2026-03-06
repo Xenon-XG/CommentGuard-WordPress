@@ -170,7 +170,7 @@ class ModerationAgent
             ];
         }
 
-        $settings = get_option('flavor_flavor_settings', []);
+        $settings = get_option('commentguard_settings', []);
         $api_key = $settings['api_key'] ?? '';
         $model = $settings['ai_model'] ?? '';
         $base_url = $settings['api_base_url'] ?? '';

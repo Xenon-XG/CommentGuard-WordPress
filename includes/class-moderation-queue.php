@@ -62,7 +62,7 @@ class ModerationQueue
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta($sql);
 
-        update_option('flavor_flavor_db_version', FLAVOR_FLAVOR_DB_VERSION);
+        update_option('commentguard_db_version', COMMENTGUARD_DB_VERSION);
     }
 
     /**

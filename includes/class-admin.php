@@ -61,15 +61,15 @@ class Admin
             return;
         }
 
-        $asset_file = FLAVOR_FLAVOR_DIR . 'build/settings.asset.php';
+        $asset_file = COMMENTGUARD_DIR . 'build/settings.asset.php';
         $asset = file_exists($asset_file) ? require $asset_file : [
             'dependencies' => ['wp-element', 'wp-components', 'wp-api-fetch', 'wp-i18n'],
-            'version' => FLAVOR_FLAVOR_VERSION,
+            'version' => COMMENTGUARD_VERSION,
         ];
 
         wp_enqueue_script(
             'ai-comment-moderator-settings',
-            FLAVOR_FLAVOR_URL . 'build/settings.js',
+            COMMENTGUARD_URL . 'build/settings.js',
             $asset['dependencies'],
             $asset['version'],
             true
@@ -77,24 +77,24 @@ class Admin
 
         wp_enqueue_style(
             'ai-comment-moderator-settings',
-            FLAVOR_FLAVOR_URL . 'build/settings.css',
+            COMMENTGUARD_URL . 'build/settings.css',
             ['wp-components'],
             $asset['version']
         );
 
         // Pass data to React
-        $settings = get_option('flavor_flavor_settings', []);
+        $settings = get_option('commentguard_settings', []);
         $provider_manager = AIProviderManager::get_instance();
 
         wp_localize_script('ai-comment-moderator-settings', 'aiCommentModerator', [
-            'restUrl' => rest_url(FLAVOR_FLAVOR_REST_NAMESPACE),
+            'restUrl' => rest_url(COMMENTGUARD_REST_NAMESPACE),
             'nonce' => wp_create_nonce('wp_rest'),
             'settings' => $this->get_settings_for_frontend($settings),
             'providers' => $provider_manager->get_providers_info(),
             'defaultSystemPrompt' => ModerationAgent::get_instance()->get_default_system_prompt(),
             'wpModerationEnabled' => get_option('comment_moderation') === '1',
             'discussionSettingsUrl' => admin_url('options-discussion.php'),
-            'version' => FLAVOR_FLAVOR_VERSION,
+            'version' => COMMENTGUARD_VERSION,
         ]);
     }
 
@@ -139,8 +139,8 @@ class Admin
     public function show_notices(): void
     {
         // Notice: WordPress comment moderation not enabled
-        if (get_transient('flavor_flavor_needs_moderation')) {
-            $settings = get_option('flavor_flavor_settings', []);
+        if (get_transient('commentguard_needs_moderation')) {
+            $settings = get_option('commentguard_settings', []);
             $enabled = $settings['enabled'] ?? false;
 
             if ($enabled && get_option('comment_moderation') !== '1') {
@@ -162,8 +162,8 @@ class Admin
         }
 
         // Notice: Plugin just activated
-        if (get_transient('flavor_flavor_activated')) {
-            delete_transient('flavor_flavor_activated');
+        if (get_transient('commentguard_activated')) {
+            delete_transient('commentguard_activated');
             ?>
             <div class="notice notice-success is-dismissible">
                 <p>

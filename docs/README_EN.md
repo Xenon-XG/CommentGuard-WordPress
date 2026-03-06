@@ -133,7 +133,7 @@ class MyProvider implements \flavor\flavor\AIProviderInterface {
 Register it via the hook:
 
 ```php
-add_action('flavor_flavor_register_providers', function($manager) {
+add_action('commentguard_register_providers', function($manager) {
     $manager->register(new MyProvider());
 });
 ```

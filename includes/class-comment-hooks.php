@@ -47,7 +47,7 @@ class CommentHooks
      */
     public function on_comment_post(int $comment_id, $comment_approved, array $commentdata): void
     {
-        $settings = get_option('flavor_flavor_settings', []);
+        $settings = get_option('commentguard_settings', []);
         $enabled = $settings['enabled'] ?? false;
 
         if (!$enabled) {
@@ -134,7 +134,7 @@ class CommentHooks
      */
     public function add_row_actions(array $actions, \WP_Comment $comment): array
     {
-        $settings = get_option('flavor_flavor_settings', []);
+        $settings = get_option('commentguard_settings', []);
         if (empty($settings['enabled'])) {
             return $actions;
         }

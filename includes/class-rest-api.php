@@ -39,7 +39,7 @@ class RestAPI
      */
     public function register_routes(): void
     {
-        $namespace = FLAVOR_FLAVOR_REST_NAMESPACE;
+        $namespace = COMMENTGUARD_REST_NAMESPACE;
 
         // Settings
         register_rest_route($namespace, '/settings', [
@@ -129,7 +129,7 @@ class RestAPI
      */
     public function get_settings(): \WP_REST_Response
     {
-        $settings = get_option('flavor_flavor_settings', []);
+        $settings = get_option('commentguard_settings', []);
         
         $defaults = [
             'enabled' => false,
@@ -168,7 +168,7 @@ class RestAPI
     public function save_settings(\WP_REST_Request $request): \WP_REST_Response
     {
         $params = $request->get_json_params();
-        $current = get_option('flavor_flavor_settings', []);
+        $current = get_option('commentguard_settings', []);
 
         $allowed_keys = [
             'enabled', 'ai_provider', 'ai_model', 'api_key',
@@ -191,13 +191,13 @@ class RestAPI
             // Key not sent (masked on frontend), keep existing
         }
 
-        update_option('flavor_flavor_settings', $current);
+        update_option('commentguard_settings', $current);
 
         // Update moderation notice transient
         if ($current['enabled'] && get_option('comment_moderation') !== '1') {
-            set_transient('flavor_flavor_needs_moderation', true, 0);
+            set_transient('commentguard_needs_moderation', true, 0);
         } else {
-            delete_transient('flavor_flavor_needs_moderation');
+            delete_transient('commentguard_needs_moderation');
         }
 
         // Build frontend-safe settings (mask API key)
@@ -396,7 +396,7 @@ class RestAPI
 
         // If no key provided, use saved key
         if (empty($api_key)) {
-            $settings = get_option('flavor_flavor_settings', []);
+            $settings = get_option('commentguard_settings', []);
             $api_key = $settings['api_key'] ?? '';
         }
 
