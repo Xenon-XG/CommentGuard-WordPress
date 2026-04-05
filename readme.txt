@@ -1,5 +1,5 @@
 === CommentGuard ===
-Contributors: Xenon-XG
+Contributors: xenon2233
 Tags: comments, moderation, ai, spam, openai
 Requires at least: 6.0
 Tested up to: 6.9
