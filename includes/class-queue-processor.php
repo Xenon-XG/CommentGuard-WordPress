@@ -39,7 +39,7 @@ class QueueProcessor
         // Schedule cron if not already scheduled or if interval changed
         $settings = get_option('commentguard_settings', []);
         $interval_minutes = max(1, (int) ($settings['cron_interval'] ?? 1));
-        $schedule_name = 'flavor_every_' . $interval_minutes . '_min';
+        $schedule_name = 'commentguard_every_' . $interval_minutes . '_min';
 
         $next = wp_next_scheduled('commentguard_process_queue');
         if ($next) {
@@ -68,7 +68,7 @@ class QueueProcessor
         $settings = get_option('commentguard_settings', []);
         $interval_minutes = max(1, (int) ($settings['cron_interval'] ?? 1));
 
-        $schedules['flavor_every_' . $interval_minutes . '_min'] = [
+        $schedules['commentguard_every_' . $interval_minutes . '_min'] = [
             'interval' => $interval_minutes * 60,
             /* translators: %d: number of minutes */
             'display' => sprintf(__('Every %d Minute(s)', 'commentguard'), $interval_minutes),

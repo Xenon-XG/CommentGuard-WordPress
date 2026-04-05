@@ -86,7 +86,7 @@ class Admin
         $settings = get_option('commentguard_settings', []);
         $provider_manager = AIProviderManager::get_instance();
 
-        wp_localize_script('ai-comment-moderator-settings', 'aiCommentModerator', [
+        wp_localize_script('ai-comment-moderator-settings', 'commentguardData', [
             'restUrl' => rest_url(COMMENTGUARD_REST_NAMESPACE),
             'nonce' => wp_create_nonce('wp_rest'),
             'settings' => $this->get_settings_for_frontend($settings),

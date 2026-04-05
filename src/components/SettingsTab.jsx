@@ -41,8 +41,8 @@ export default function SettingsTab({ initialSettings, providers, defaultSystemP
             if (result.settings) {
                 setSettings(result.settings);
                 // Sync to global so tab switches get fresh data
-                if (window.aiCommentModerator) {
-                    window.aiCommentModerator.settings = result.settings;
+                if (window.commentguardData) {
+                    window.commentguardData.settings = result.settings;
                 }
             }
             setNewApiKey('');

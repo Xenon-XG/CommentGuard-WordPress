@@ -1,7 +1,7 @@
 import { Card, CardBody, CardHeader, ExternalLink } from '@wordpress/components';
 import { useLang } from '../i18n';
 
-const { version } = window.aiCommentModerator || {};
+const { version } = window.commentguardData || {};
 
 export default function AboutTab() {
     const { t } = useLang();

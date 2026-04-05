@@ -1,10 +1,10 @@
 === CommentGuard ===
-Contributors: xenon
+Contributors: Xenon-XG
 Tags: comments, moderation, ai, spam, openai
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -85,7 +85,48 @@ Yes. The Audit Log records every decision with the AI's reasoning, the model use
 3. Audit log — Review past moderation decisions with detailed reasoning
 4. Statistics dashboard — Track moderation activity and approval rates
 
+== External Services ==
+
+This plugin connects to third-party AI API services to perform comment moderation analysis.
+
+= OpenAI API =
+
+This plugin sends comment data to the OpenAI API (or a compatible API endpoint configured by the user) for AI-powered moderation analysis.
+
+**What data is sent:**
+* Comment content (text)
+* Comment author name, email, and IP address
+* Post title and excerpt (for context)
+* Parent comment content (if the comment is a reply)
+
+**When data is sent:**
+* Data is sent when the WP-Cron queue processor runs to moderate pending comments
+* Data is also sent when an administrator manually triggers queue processing or tests the API connection
+
+**Service details:**
+* Default API endpoint: https://api.openai.com/v1
+* Users can configure a custom API Base URL to use alternative OpenAI-compatible services
+* OpenAI Terms of Use: https://openai.com/terms/
+* OpenAI Privacy Policy: https://openai.com/privacy/
+
+== Development ==
+
+The source code for the compiled JavaScript files in the `build/` directory can be found in the `src/` directory of this plugin, or on GitHub:
+https://github.com/Xenon-XG/CommentGuard-WordPress
+
+To build from source:
+
+1. Run `npm install`
+2. Run `npm run build`
+
 == Changelog ==
+
+= 1.1.3 =
+* Fix Contributors username to match WordPress.org profile
+* Add External Services section declaring OpenAI API usage
+* Add Development section with source code link and build instructions
+* Rename JS global variable to use plugin-specific prefix (commentguardData)
+* Rename WP-Cron schedule to use plugin-specific prefix (commentguard_every_)
 
 = 1.0.0 =
 * Initial release

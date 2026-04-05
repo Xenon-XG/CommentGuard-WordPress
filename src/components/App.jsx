@@ -7,7 +7,7 @@ import StatsTab from './StatsTab';
 import AboutTab from './AboutTab';
 import { LangProvider, useLang } from '../i18n';
 
-const { settings: initialSettings, providers, defaultSystemPrompt, wpModerationEnabled, discussionSettingsUrl, version } = window.aiCommentModerator || {};
+const { settings: initialSettings, providers, defaultSystemPrompt, wpModerationEnabled, discussionSettingsUrl, version } = window.commentguardData || {};
 
 function AppInner() {
     const [globalNotice, setGlobalNotice] = useState(null);
